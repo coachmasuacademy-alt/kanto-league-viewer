@@ -16,7 +16,59 @@
         .table-primary-light { background-color: #e7f1ff; font-weight: bold; width: 120px; }
         .cell-self { background-color: #f1f3f5; }
         [v-cloak] { display: none; }
-        .back-number { font-size: 0.8rem; font-weight: bold; color: #666; margin-right: 4px; }
+        
+
+/* --- スマホ最適化スタイル --- */
+
+/* 1. 全体の余白調整 */
+@media (max-width: 768px) {
+    .container { padding-left: 8px; padding-right: 8px; }
+    .header-banner { padding: 1.5rem 0.5rem !important; }
+    h3 { font-size: 1.25rem; }
+}
+
+/* 2. 星取表をスマホでスクロール可能にし、大学名を左に固定 */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.league-table {
+    font-size: 0.8rem; /* スマホでは文字を少し小さく */
+    min-width: 600px;  /* 表が潰れないように最低幅を確保 */
+}
+.table-primary-light {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background-color: #e7f1ff !important; /* スクロールしても大学名が見えるように固定 */
+}
+
+/* 3. 選手名と背番号の視認性向上 */
+.player-name {
+    font-size: 0.9rem;
+    line-height: 1.2;
+    white-space: nowrap; /* 改行を防ぐ */
+}
+.back-number {
+    display: inline-block;
+    background-color: #f0f0f0;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-right: 6px;
+    vertical-align: middle; /* 名前との高さを揃える */
+}
+
+/* 4. スコアボックスを押しやすく */
+.game-score-box {
+    min-width: 65px !important;
+    padding: 4px !important;
+}
+@media (max-width: 576px) {
+    .game-score-box { min-width: 60px !important; }
+}
     </style>
 </head>
 <body>
