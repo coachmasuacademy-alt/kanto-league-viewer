@@ -9,37 +9,31 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background-color: #f4f7f9; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; }
+        body { background-color: #f4f7f9; font-family: "Helvetica Neue", Arial, sans-serif; }
         .header-banner { background: linear-gradient(135deg, #1a1e21 0%, #0d6efd 100%); color: white; }
         .league-table { background: white; border-radius: 12px; overflow: hidden; table-layout: fixed; }
         .league-table th, .league-table td { text-align: center; vertical-align: middle; border: 1px solid #dee2e6; height: 80px; padding: 4px; }
         .table-primary-light { background-color: #e7f1ff; font-weight: bold; width: 120px; }
         .cell-self { background-color: #f1f3f5; }
         [v-cloak] { display: none; }
+        .back-number { font-size: 0.8rem; font-weight: bold; color: #666; margin-right: 4px; }
     </style>
 </head>
 <body>
 <div id="app" class="container py-3" v-cloak>
 
     <div class="header-banner shadow-sm rounded mb-4 text-center py-4">
-        <h3 class="fw-bold m-0 text-white">
-            <i class="bi bi-broadcast text-warning me-2"></i>
-            ライブ速報・リーグ対戦表
-        </h3>
+        <h3 class="fw-bold m-0 text-white"><i class="bi bi-broadcast text-warning me-2"></i> ライブ速報・リーグ対戦表</h3>
         <p class="mb-0 mt-2 small opacity-75">関東学生バドミントン連盟 公式リアルタイム更新</p>
     </div>
 
-<div class="container mt-3">
     <div class="nav nav-pills nav-fill bg-white p-2 rounded shadow-sm border mb-4">
-        <button v-for="tab in tabList" 
-                :key="tab.id"
-                class="nav-link" 
+        <button v-for="tab in tabList" :key="tab.id" class="nav-link" 
                 :class="{ active: currentTab.gender === tab.gender && currentTab.division === tab.division }"
                 @click="switchTab(tab.gender, tab.division)">
             {{ tab.name }}
         </button>
     </div>
-</div>
 
     <div class="mb-5">
         <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h5>
@@ -67,10 +61,8 @@
 
     <div v-for="(matches, date) in groupedMatches" :key="date" class="mb-5">
         <h4 class="fw-bold mb-3 border-bottom pb-2">
-            <i class="bi bi-calendar-check me-2 text-primary"></i>
-            {{ date === '未定' ? '日程未定' : date }} の試合
+            <i class="bi bi-calendar-check me-2 text-primary"></i> {{ date === '未定' ? '日程未定' : date }} の試合
         </h4>
-
         <div class="row g-4">
             <div v-for="match in matches" :key="match.id" class="col-12">
                 <div class="card shadow-sm border-0">
@@ -88,74 +80,61 @@
                     </div>
 
                     <div class="card-body p-0" v-if="match.isLive || match.status === 'finished'">
-                       
-<div v-for="game in match.games" :key="game.type" class="border-bottom p-3 d-flex align-items-center bg-white">
-    
-    <div class="fw-bold text-muted text-center" style="width: 50px; font-size: 0.8rem;">{{ game.type }}</div>
-    
-    <div class="flex-grow-1 text-end pe-3" style="width: 30%;">
-        <div class="fw-bold text-primary d-flex align-items-center justify-content-end">
-            <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                  class="badge rounded-pill bg-primary me-2" style="font-size: 0.7rem;">
-                {{ getIndividualGameCount(game, match.status).home }}
-            </span>
-            <div class="text-end">
-                <div>{{ game.homeP1 }}</div>
-                <div v-if="game.homeP2" class="small">{{ game.homeP2 }}</div>
-            </div>
-        </div>
-    </div>
+                        <div v-for="game in match.games" :key="game.type" class="border-bottom p-3 d-flex align-items-center bg-white">
+                            <div class="fw-bold text-muted text-center" style="width: 50px; font-size: 0.8rem;">{{ game.type }}</div>
+                            <div class="flex-grow-1 text-end pe-3" style="width: 30%;">
+                                <div class="fw-bold text-primary d-flex align-items-center justify-content-end">
+                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                          class="badge rounded-pill bg-primary me-2" style="font-size: 0.7rem;">
+                                        {{ getIndividualGameCount(game, match.status).home }}
+                                    </span>
+                                    <div class="text-end">
+                                        <div class="player-name">
+                                            <span class="back-number">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()] }}</span>{{ game.homeP1 }}
+                                        </div>
+                                        <div v-if="game.homeP2" class="player-name small">
+                                            <span class="back-number">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()] }}</span>{{ game.homeP2 }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-   <div v-for="n in 3" :key="n" class="p-2 border rounded shadow-sm bg-light flex-fill" style="min-width: 75px;">
-    <div class="text-muted mb-1" style="font-size: 0.65rem; border-bottom: 1px solid #eee;">{{ n }}G</div>
-    
-    <div class="h6 m-0 fw-bold d-flex flex-column align-items-center">
-        <div class="d-flex justify-content-center gap-1">
-            <span :class="{
-                'text-primary': (game.gameStatus && game.gameStatus[n-1] || match.status === 'finished') && game.scores[n-1].h > game.scores[n-1].a,
-                'text-muted opacity-50': (game.gameStatus && game.gameStatus[n-1] || match.status === 'finished') && game.scores[n-1].h < game.scores[n-1].a
-            }">{{ game.scores[n-1].h }}</span>
-            
-            <span class="text-muted mx-1">-</span>
-            
-            <span :class="{
-                'text-danger': (game.gameStatus && game.gameStatus[n-1] || match.status === 'finished') && game.scores[n-1].a > game.scores[n-1].h,
-                'text-muted opacity-50': (game.gameStatus && game.gameStatus[n-1] || match.status === 'finished') && game.scores[n-1].a < game.scores[n-1].h
-            }">{{ game.scores[n-1].a }}</span>
-        </div>
+                            <div v-for="n in 3" :key="n" class="p-2 border rounded shadow-sm bg-light flex-fill mx-1 text-center" style="min-width: 75px;">
+                                <div class="text-muted mb-1" style="font-size: 0.6rem; border-bottom: 1px solid #eee;">{{ n }}G</div>
+                                <div class="h6 m-0 fw-bold d-flex flex-column align-items-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <span>{{ game.scores[n-1].h }}</span><span class="text-muted">-</span><span>{{ game.scores[n-1].a }}</span>
+                                    </div>
+                                    <div v-if="game.retired && game.retired[n-1]" class="text-danger fw-bold" style="font-size: 0.6rem;">(棄権)</div>
+                                </div>
+                            </div>
 
-        <div v-if="game.retired && game.retired[n-1]" class="text-danger fw-bold" style="font-size: 0.6rem; margin-top: 2px;">
-            (棄権)
-        </div>
-    </div>
-</div>
-
-    <div class="flex-grow-1 ps-3" style="width: 30%;">
-        <div class="fw-bold text-danger d-flex align-items-center justify-content-start">
-            <div class="text-start">
-                <div>{{ game.awayP1 }}</div>
-                <div v-if="game.awayP2" class="small">{{ game.awayP2 }}</div>
-            </div>
-            <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                  class="badge rounded-pill bg-danger ms-2" style="font-size: 0.7rem;">
-                {{ getIndividualGameCount(game, match.status).away }}
-            </span>
-        </div>
-    </div>
-</div>
-                    
-                    <div class="card-body py-4 text-center text-muted bg-white rounded-bottom" v-else>
-                        <i class="bi bi-clock me-2"></i> 試合開始までお待ちください（ライブ配信準備中）
+                            <div class="flex-grow-1 ps-3" style="width: 30%;">
+                                <div class="fw-bold text-danger d-flex align-items-center justify-content-start">
+                                    <div class="text-start">
+                                        <div class="player-name">
+                                            <span class="back-number">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()] }}</span>{{ game.awayP1 }}
+                                        </div>
+                                        <div v-if="game.awayP2" class="player-name small">
+                                            <span class="back-number">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()] }}</span>{{ game.awayP2 }}
+                                        </div>
+                                    </div>
+                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                          class="badge rounded-pill bg-danger ms-2" style="font-size: 0.7rem;">
+                                        {{ getIndividualGameCount(game, match.status).away }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div> <script>
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmjsXL_PnAh0uIfLuQ6kEXNinHEWT_tGjYGGQdo63zgkAOvgJJK4Y2hhwC7sM8vZ58/exec";
 
-
-    // 運営アプリと同じFirebase設定を貼り付けてください
-    const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyASxcZep_OpFzc2EML2sUMRuK8rDJXv-cg",
     authDomain: "kanto-badminton-app.firebaseapp.com",
     projectId: "kanto-badminton-app",
@@ -164,198 +143,114 @@
     appId: "1:64616841162:web:aa78e54f507bd502de5933",
 };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    const { createApp } = Vue;
-    createApp({
-        data() {
-            return {
-                allMatches: [],
-                leagueUnivs: [],
-currentTab: { gender: '1', division: 1 }, 
-        tabList: [
-            { id: '1m', name: '1部 男子', gender: '1', division: 1 },
-            { id: '1w', name: '1部 女子', gender: '2', division: 1 },
-            { id: '2m', name: '2部 男子', gender: '1', division: 2 },
-            { id: '2w', name: '2部 女子', gender: '2', division: 2 },
-        ],
-            }
+const { createApp } = Vue;
+createApp({
+    data() {
+        return {
+            allMatches: [],
+            allRecords: [],
+            currentTab: { gender: '1', division: 1 }, 
+            tabList: [
+                { id: '1m', name: '1部 男子', gender: '1', division: 1 },
+                { id: '1w', name: '1部 女子', gender: '2', division: 1 },
+                { id: '2m', name: '2部 男子', gender: '1', division: 2 },
+                { id: '2w', name: '2部 女子', gender: '2', division: 2 },
+            ],
+        }
+    },
+    computed: {
+        backNumberMap() {
+            const map = {};
+            if (!this.allRecords) return map;
+            this.allRecords.forEach(record => {
+                try {
+                    const players = JSON.parse(record.player_reg);
+                    const univ = record.univ_name.trim();
+                    players.forEach(p => {
+                        if (p.name && p.back_number) map[`${univ}_${p.name.trim()}`] = `[${p.back_number}] `;
+                    });
+                } catch (e) {}
+            });
+            return map;
         },
-        computed: {
-
-
-    ongoingMatches() {
-        return this.allMatches.filter(m => m.status === 'ongoing');
-    },
-
-    // 2. 試合データを日付ごとにグループ化（メインの試合一覧表示用）
-    groupedMatches() {
-        const groups = {};
-        this.allMatches.forEach(m => {
-            // matchDate が空の場合は "未定" とする
-            const date = m.matchDate || "未定";
-            if (!groups[date]) groups[date] = [];
-            groups[date].push(m);
-        });
-
-        // 日付文字列（2026-03-25など）で昇順にソートしてオブジェクトを再構成
-        return Object.keys(groups).sort().reduce((obj, key) => {
-            obj[key] = groups[key];
-            return obj;
-        }, {});
-    }
-},
-
-        mounted() {
-    db.collection('matches')
-      .orderBy('sortOrder', 'asc') // 試合順を固定 [cite: 1, 3]
-      .onSnapshot(qs => {
-          this.allMatches = qs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          // ★ここで大学リストの並び替え関数を呼び出す
-          this.updateUnivList(); 
-      });
-},
-
-        methods: {
-switchTab(gender, div) {
-        this.currentTab.gender = gender;
-        this.currentTab.division = div;
-        
-        // 星取表の大学並び順（1〜6位）を再計算するために呼び出す
-        if (this.updateUnivList) {
-            this.updateUnivList();
+        filteredMatches() {
+            const label = this.currentTab.gender === '1' ? '男子' : '女子';
+            return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
+        },
+        leagueUnivs() {
+            const univMap = new Map();
+            this.filteredMatches.forEach(m => {
+                if (m.homeUniv && m.homeRank) univMap.set(Number(m.homeRank), m.homeUniv);
+                if (m.awayUniv && m.awayRank) univMap.set(Number(m.awayRank), m.awayUniv);
+            });
+            return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
+        },
+        groupedMatches() {
+            const groups = {};
+            this.filteredMatches.forEach(m => {
+                const date = m.matchDate || "未定";
+                if (!groups[date]) groups[date] = [];
+                groups[date].push(m);
+            });
+            return Object.keys(groups).sort().reduce((obj, key) => {
+                obj[key] = groups[key];
+                return obj;
+            }, {});
         }
     },
+    async mounted() {
+        try {
+            const res = await fetch(GAS_API_URL);
+            const data = await res.json();
+            this.allRecords = data.records;
+            console.log("名簿取得成功:", this.allRecords.length, "件");
+        } catch (e) { console.error(e); }
 
-
-getIndividualGameCount(game, matchStatus) {
-    let hCount = 0;
-    let aCount = 0;
-    
-    game.scores.forEach((s, idx) => {
-        const isManuallyFinished = (game.gameStatus && game.gameStatus[idx]) === true;
-        const isMatchFinished = matchStatus === 'finished';
-        const retiredSide = game.retired ? game.retired[idx] : null; // 棄権サイドを取得
-
-        if (isManuallyFinished || isMatchFinished) {
-            // ★棄権がある場合の判定
-            if (retiredSide === 'h') {
-                aCount++; // ホーム棄権ならアウェイの勝ち
-            } else if (retiredSide === 'a') {
-                hCount++; // アウェイ棄権ならホームの勝ち
-            } else {
-                // 通常の点数決着（安全装置：21点以上のみカウント）
-                if (s.h >= 21 || s.a >= 21 || isMatchFinished) {
-                    if (s.h > s.a) hCount++;
-                    else if (s.a > s.h) aCount++;
+        db.collection('matches').orderBy('sortOrder', 'asc').onSnapshot(qs => {
+            this.allMatches = qs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        });
+    },
+    methods: {
+        switchTab(g, d) { this.currentTab.gender = g; this.currentTab.division = d; },
+        getMatchScore(m) {
+            let h = 0, a = 0;
+            m.games.forEach(g => {
+                const c = this.getIndividualGameCount(g, m.status);
+                if (c.home >= 2) h++; else if (c.away >= 2) a++;
+            });
+            return { home: h, away: a };
+        },
+        getIndividualGameCount(g, s) {
+            let h = 0, a = 0;
+            g.scores.forEach((sc, i) => {
+                if ((g.gameStatus && g.gameStatus[i]) || s === 'finished') {
+                    const retired = g.retired ? g.retired[i] : null;
+                    if (retired === 'h') a++;
+                    else if (retired === 'a') h++;
+                    else if (sc.h > sc.a) h++;
+                    else if (sc.a > sc.h) a++;
                 }
+            });
+            return { home: h, away: a };
+        },
+        getMatchResult(row, col) {
+            const m = this.filteredMatches.find(m => (m.homeUniv === row && m.awayUniv === col) || (m.homeUniv === col && m.awayUniv === row));
+            if (!m) return '-';
+            const s = this.getMatchScore(m);
+            const isH = m.homeUniv === row;
+            const rS = isH ? s.home : s.away;
+            const cS = isH ? s.away : s.home;
+            if (m.status === 'finished') {
+                const color = rS > cS ? 'text-danger' : 'text-primary';
+                return `<div class="${color} fw-bold">${rS > cS ? '○' : '●'} ${rS}-${cS}</div>`;
             }
+            return `<div class="text-muted small">No.${(m.sortOrder || 0) + 1}<br>${rS}-${cS}</div>`;
         }
-    });
-    return { home: hCount, away: aCount };
-},
-
-isGameDecided(h, a, matchStatus) {
-        // 対戦自体が「終了」していれば、点数に関わらず決着とみなす
-        if (matchStatus === 'finished') return true;
-        
-        // バドミントンの一般的な決着条件（21点以上かつ2点差、または30点到達）
-        const winPoint = 21;
-        if ((h >= winPoint || a >= winPoint) && Math.abs(h - a) >= 2) return true;
-        if (h === 30 || a === 30) return true;
-        
-        return false;
-    },
-
-            updateUnivList() {
-        const univMap = new Map();
-        
-        // 全試合データを走査して「ランク」と「大学名」のペアを作る [cite: 3]
-        this.allMatches.forEach(m => {
-            if (m.homeUniv && m.homeRank) univMap.set(m.homeRank, m.homeUniv);
-            if (m.awayUniv && m.awayRank) univMap.set(m.awayRank, m.awayUniv);
-        });
-
-        // ランク番号 (1, 2, 3...) で昇順に並べ替えて大学名だけを配列にする 
-        this.leagueUnivs = Array.from(univMap.entries())
-            .sort((a, b) => a[0] - b[0]) // 数字の小さい順
-            .map(entry => entry[1]);     // 大学名のみ抽出
-    },
-            
-getMatchScore(match) {
-    let homeMatchWins = 0;
-    let awayMatchWins = 0;
-
-    match.games.forEach(game => {
-        let homeGameWins = 0;
-        let awayGameWins = 0;
-        let isRetired = false;
-
-        game.scores.forEach((s, idx) => {
-            const isFinished = (game.gameStatus && game.gameStatus[idx]) || match.status === 'finished';
-            const retiredSide = game.retired ? game.retired[idx] : null;
-
-            if (isFinished) {
-                if (retiredSide === 'h') {
-                    // ホームが棄権した場合、即座にアウェイの「マッチ勝利」を確定
-                    awayMatchWins++;
-                    isRetired = true;
-                } else if (retiredSide === 'a') {
-                    // アウェイが棄権した場合、即座にホームの「マッチ勝利」を確定
-                    homeMatchWins++;
-                    isRetired = true;
-                } else {
-                    // 通常の点数決着
-                    if (s.h > s.a) homeGameWins++;
-                    else if (s.a > s.h) awayGameWins++;
-                }
-            }
-        });
-
-        // 棄権が発生していない場合のみ、通常の「2ゲーム先取」判定を行う
-        if (!isRetired) {
-            if (homeGameWins >= 2) homeMatchWins++;
-            else if (awayGameWins >= 2) awayMatchWins++;
-        }
-    });
-
-    return { home: homeMatchWins, away: awayMatchWins };
-},
-
-getMatchResult(rowUniv, colUniv) {
-    const m = this.allMatches.find(m => 
-        (m.homeUniv === rowUniv && m.awayUniv === colUniv) || 
-        (m.homeUniv === colUniv && m.awayUniv === rowUniv)
-    );
-    if (!m) return '-';
-
-    const score = this.getMatchScore(m);
-    const isRowHome = m.homeUniv === rowUniv;
-    const rowScore = isRowHome ? score.home : score.away;
-    const colScore = isRowHome ? score.away : score.home;
-
-    // 星取表（リーグ表）の表示
-    if (m.status === 'finished') {
-        const icon = rowScore > colScore ? '○' : '●';
-        const color = rowScore > colScore ? 'text-danger' : 'text-primary';
-        return `<div class="${color} fw-bold">${icon} ${rowScore}-${colScore}</div>`;
     }
-
-    // 進行中の表示（getMatchScoreが更新されたので、決着がつくまで 0-0 のままになります）
-    const matchNo = this.allMatches.indexOf(m) + 1;
-    const displayDate = m.matchDate ? m.matchDate.split('-').slice(1).join('/') : '未定';
-    
-    return `
-        <div class="text-muted small" style="line-height: 1.2;">
-            <div class="fw-bold">No.${matchNo}</div>
-            <div style="font-size: 0.7rem;">${displayDate}</div>
-            <div class="fw-bold text-dark" style="font-size: 0.8rem;">${rowScore}-${colScore}</div>
-        </div>
-    `;
-}
-        }
-    }).mount('#app');
+}).mount('#app');
 </script>
 </body>
 </html>
