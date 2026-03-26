@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>【ライブ速報】関東学生バドミントン連盟 リーグ戦</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -9,87 +10,111 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
-        body { background-color: #f4f7f9; font-family: "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: #f4f7f9; font-family: "Helvetica Neue", Arial, sans-serif; margin: 0; padding: 0; }
         .header-banner { background: linear-gradient(135deg, #1a1e21 0%, #0d6efd 100%); color: white; }
         .league-table { background: white; border-radius: 12px; overflow: hidden; table-layout: fixed; }
         .league-table th, .league-table td { text-align: center; vertical-align: middle; border: 1px solid #dee2e6; height: 80px; padding: 4px; }
-        .table-primary-light { background-color: #e7f1ff; font-weight: bold; width: 120px; }
+        .table-primary-light { background-color: #e7f1ff; font-weight: bold; width: 100px; }
         .cell-self { background-color: #f1f3f5; }
         [v-cloak] { display: none; }
+
+        /* --- 視認性強化クラス（PC・スマホ共通） --- */
+    /* 大学名を大きく */
+    .match-header-title { font-size: 1.25rem; font-weight: 800; }
+    
+    /* 種目名（1S, 1Dなど）を巨大化 */
+    .game-type-label { 
+            font-size: 1.2rem !important; /* 1.4remから大幅アップ */
+            font-weight: 900 !important; 
+            color: #0d6efd; 
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+            line-height: 1;
+        }
+
+    /* 選手名を太く大きく */
+    .player-name-big { font-size: 1.1rem !important; font-weight: 700; color: #212529; line-height: 1.2; }
+    .back-number-tag { 
+        font-size: 0.75rem; background: #e9ecef; padding: 1px 4px; 
+        border-radius: 4px; color: #0d6efd; margin-right: 4px; font-weight: bold; 
+    }
+
+    /* スコア数字を最大化 */
+    .score-val-huge { 
+        font-size: 1.6rem !important; 
+        font-weight: 800 !important; 
+        font-family: 'Verdana', sans-serif; 
+        line-height: 1; 
+    }
+    .score-unit-card {
+        background: #ffffff; border: 2px solid #dee2e6; border-radius: 10px;
+        padding: 8px 2px; min-width: 70px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* --- スマホ最適化（768px以下） --- */
+    @media (max-width: 768px) {
+        /* 横幅を限界まで使う */
+        .container-fluid { padding-left: 5px !important; padding-right: 5px !important; }
         
+        /* カードヘッダーの調整 */
+        .card-header { padding: 12px 10px !important; }
+        .match-header-title { font-size: 1.1rem !important; }
 
-/* --- スマホ最適化スタイル --- */
+        /* 試合詳細行：横並びが厳しい場合は自動で折り返しを許可 */
+        .game-detail-row {
+            flex-wrap: wrap !important;
+            padding: 15px 5px !important;
+        }
+        
+        /* 選手エリア：幅を広げて名前を大きく見せる */
+        .player-box { width: 35% !important; }
+        
+        /* スコアエリア：スマホでは中央下に大きく配置 */
+        .scores-container { 
+            width: 100% !important; 
+            order: 3; 
+            margin-top: 12px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 8px; 
+        }
+        
+        .score-unit-card { min-width: 90px; padding: 12px 4px; }
+        .score-val-huge { font-size: 1.9rem !important; } /* スマホでは点数をさらに巨大化 */
+        
+        .game-type-box {
+        width: 120px !important; /* PCでの表示幅をしっかり固定 */
+        flex-shrink: 0;          /* 他の要素に押されて潰れないようにする */
+        text-align: center;
+    }
 
-/* 1. 全体の余白調整 */
-@media (max-width: 768px) {
-    .container { padding-left: 8px; padding-right: 8px; }
-    .header-banner { padding: 1.5rem 0.5rem !important; }
-    h3 { font-size: 1.25rem; }
-}
+        /* 星取表のスクロール設定 */
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+        .league-table { font-size: 0.8rem; min-width: 550px; }
+        .table-primary-light { position: sticky; left: 0; z-index: 2; background-color: #e7f1ff !important; }
 
-/* 2. 星取表をスマホでスクロール可能にし、大学名を左に固定 */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-.league-table {
-    font-size: 0.8rem; /* スマホでは文字を少し小さく */
-    min-width: 600px;  /* 表が潰れないように最低幅を確保 */
-}
-.table-primary-light {
-    position: sticky;
-    left: 0;
-    z-index: 2;
-    background-color: #e7f1ff !important; /* スクロールしても大学名が見えるように固定 */
-}
-
-/* 3. 選手名と背番号の視認性向上 */
-.player-name {
-    font-size: 0.9rem;
-    line-height: 1.2;
-    white-space: nowrap; /* 改行を防ぐ */
-}
-.back-number {
-    display: inline-block;
-    background-color: #f0f0f0;
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    color: #007bff;
-    margin-right: 6px;
-    vertical-align: middle; /* 名前との高さを揃える */
-}
-
-/* 4. スコアボックスを押しやすく */
-.game-score-box {
-    min-width: 65px !important;
-    padding: 4px !important;
-}
-@media (max-width: 576px) {
-    .game-score-box { min-width: 60px !important; }
-}
+        .player-name { line-height: 1.2; word-break: break-all; }
+        .back-number { display: inline-block; background-color: #f0f0f0; padding: 1px 5px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: #007bff; margin-right: 4px; }
     </style>
 </head>
 <body>
-<div id="app" class="container py-3" v-cloak>
+<div id="app" class="container-fluid py-2 px-1" v-cloak>
 
-    <div class="header-banner shadow-sm rounded mb-4 text-center py-4">
+    <div class="header-banner shadow-sm rounded mb-3 text-center py-4">
         <h3 class="fw-bold m-0 text-white"><i class="bi bi-broadcast text-warning me-2"></i> ライブ速報・リーグ対戦表</h3>
-        <p class="mb-0 mt-2 small opacity-75">関東学生バドミントン連盟 公式リアルタイム更新</p>
+        <p class="mb-0 mt-2 small opacity-75">関東学生バドミントン連盟 公式速報</p>
     </div>
 
-    <div class="nav nav-pills nav-fill bg-white p-2 rounded shadow-sm border mb-4">
-        <button v-for="tab in tabList" :key="tab.id" class="nav-link" 
+    <div class="nav nav-pills nav-fill bg-white p-1 rounded shadow-sm border mb-4">
+        <button v-for="tab in tabList" :key="tab.id" class="nav-link py-2" 
                 :class="{ active: currentTab.gender === tab.gender && currentTab.division === tab.division }"
-                @click="switchTab(tab.gender, tab.division)">
+                @click="switchTab(tab.gender, tab.division)" style="font-size: 0.85rem;">
             {{ tab.name }}
         </button>
     </div>
 
-    <div class="mb-5">
-        <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h5>
-        <div class="table-responsive shadow-sm rounded bg-white">
+    <div class="mb-5 px-1">
+        <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h6>
+        <div class="table-responsive shadow-sm">
             <table class="table league-table m-0">
                 <thead>
                     <tr>
@@ -109,22 +134,22 @@
         </div>
     </div>
 
-    <h5 class="fw-bold mb-4"><i class="bi bi-list-check"></i> 試合別詳細・オーダー速報</h5>
+    <h6 class="fw-bold mb-4 px-1"><i class="bi bi-list-check"></i> 試合別詳細・オーダー速報</h6>
 
-    <div v-for="(matches, date) in groupedMatches" :key="date" class="mb-5">
-        <h4 class="fw-bold mb-3 border-bottom pb-2">
-            <i class="bi bi-calendar-check me-2 text-primary"></i> {{ date === '未定' ? '日程未定' : date }} の試合
-        </h4>
-        <div class="row g-4">
+    <div v-for="(matches, date) in groupedMatches" :key="date" class="mb-4">
+        <div class="fw-bold mb-2 border-bottom pb-1 px-1 text-primary" style="font-size: 0.9rem;">
+            <i class="bi bi-calendar-check me-1"></i> {{ date === '未定' ? '日程未定' : date }}
+        </div>
+        
+        <div class="row g-3">
             <div v-for="match in matches" :key="match.id" class="col-12">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header d-flex justify-content-between align-items-center py-3" 
+                <div class="card shadow-sm border-0 mb-2">
+                    <div class="card-header d-flex justify-content-between align-items-center py-2 px-3" 
                          :class="match.isLive ? 'bg-primary text-white' : 'bg-light'">
-                        <div>
-                            <span v-if="match.isLive" class="badge bg-danger me-2">LIVE中</span>
-                            <span v-else-if="match.status === 'finished'" class="badge bg-success me-2">終了</span>
-                            <span v-else class="badge bg-secondary me-2">予定</span>
-                            <span class="fw-bold">{{ match.homeUniv }} vs {{ match.awayUniv }}</span>
+                        <div class="small fw-bold">
+                            <span v-if="match.isLive" class="badge bg-danger me-1 animate-pulse">LIVE</span>
+                            <span v-else-if="match.status === 'finished'" class="badge bg-success me-1">終了</span>
+                            {{ match.homeUniv }} vs {{ match.awayUniv }}
                         </div>
                         <div class="h5 m-0 fw-bold" v-if="match.isLive || match.status === 'finished'">
                             {{ getMatchScore(match).home }} - {{ getMatchScore(match).away }}
@@ -132,50 +157,46 @@
                     </div>
 
                     <div class="card-body p-0" v-if="match.isLive || match.status === 'finished'">
-                        <div v-for="game in match.games" :key="game.type" class="border-bottom p-3 d-flex align-items-center bg-white">
-                            <div class="fw-bold text-muted text-center" style="width: 50px; font-size: 0.8rem;">{{ game.type }}</div>
-                            <div class="flex-grow-1 text-end pe-3" style="width: 30%;">
-                                <div class="fw-bold text-primary d-flex align-items-center justify-content-end">
-                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                                          class="badge rounded-pill bg-primary me-2" style="font-size: 0.7rem;">
-                                        {{ getIndividualGameCount(game, match.status).home }}
-                                    </span>
-                                    <div class="text-end">
-                                        <div class="player-name">
-                                            <span class="back-number">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()] }}</span>{{ game.homeP1 }}
-                                        </div>
-                                        <div v-if="game.homeP2" class="player-name small">
-                                            <span class="back-number">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()] }}</span>{{ game.homeP2 }}
-                                        </div>
+    <div v-for="game in match.games" :key="game.type" class="border-bottom d-flex align-items-center game-detail-row bg-white">
+        
+        <div class="game-type-box">
+            <div class="game-type-label text-center">{{ game.type }}</div>
+        </div>
+                            
+                            <div class="player-area text-end pe-1" style="width: 28%;">
+                                <div class="player-name fw-bold">
+                                    {{ game.homeP1 }}<span class="back-number ms-1" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()]">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()] }}</span>
+                                </div>
+                                <div v-if="game.homeP2" class="player-name small text-muted">
+                                    {{ game.homeP2 }}<span class="back-number ms-1" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()]">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()] }}</span>
+                                </div>
+                                <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                      class="badge rounded-pill bg-primary mt-1 badge-score">
+                                    {{ getIndividualGameCount(game, match.status).home }}G
+                                </span>
+                            </div>
+
+                            <div class="d-flex justify-content-center flex-grow-1">
+                                <div v-for="n in 3" :key="n" class="score-unit border rounded bg-light text-center" style="min-width: 55px; margin: 0 2px; padding: 4px;">
+                                    <div class="text-muted mb-1" style="font-size: 0.5rem; border-bottom: 1px solid #e0e0e0;">{{ n }}G</div>
+                                    <div class="fw-bold" style="font-size: 0.9rem; letter-spacing: -1px;">
+                                        {{ game.scores[n-1].h }}-{{ game.scores[n-1].a }}
                                     </div>
+                                    <div v-if="game.retired && game.retired[n-1]" class="text-danger" style="font-size: 0.5rem; font-weight: bold;">棄権</div>
                                 </div>
                             </div>
 
-                            <div v-for="n in 3" :key="n" class="p-2 border rounded shadow-sm bg-light flex-fill mx-1 text-center" style="min-width: 75px;">
-                                <div class="text-muted mb-1" style="font-size: 0.6rem; border-bottom: 1px solid #eee;">{{ n }}G</div>
-                                <div class="h6 m-0 fw-bold d-flex flex-column align-items-center">
-                                    <div class="d-flex justify-content-center gap-1">
-                                        <span>{{ game.scores[n-1].h }}</span><span class="text-muted">-</span><span>{{ game.scores[n-1].a }}</span>
-                                    </div>
-                                    <div v-if="game.retired && game.retired[n-1]" class="text-danger fw-bold" style="font-size: 0.6rem;">(棄権)</div>
+                            <div class="player-area text-start ps-1" style="width: 28%;">
+                                <div class="player-name fw-bold">
+                                    <span class="back-number me-1" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()]">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()] }}</span>{{ game.awayP1 }}
                                 </div>
-                            </div>
-
-                            <div class="flex-grow-1 ps-3" style="width: 30%;">
-                                <div class="fw-bold text-danger d-flex align-items-center justify-content-start">
-                                    <div class="text-start">
-                                        <div class="player-name">
-                                            <span class="back-number">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()] }}</span>{{ game.awayP1 }}
-                                        </div>
-                                        <div v-if="game.awayP2" class="player-name small">
-                                            <span class="back-number">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()] }}</span>{{ game.awayP2 }}
-                                        </div>
-                                    </div>
-                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                                          class="badge rounded-pill bg-danger ms-2" style="font-size: 0.7rem;">
-                                        {{ getIndividualGameCount(game, match.status).away }}
-                                    </span>
+                                <div v-if="game.awayP2" class="player-name small text-muted">
+                                    <span class="back-number me-1" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()]">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()] }}</span>{{ game.awayP2 }}
                                 </div>
+                                <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                      class="badge rounded-pill bg-danger mt-1 badge-score">
+                                    {{ getIndividualGameCount(game, match.status).away }}G
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -183,9 +204,10 @@
             </div>
         </div>
     </div>
-</div> <script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmjsXL_PnAh0uIfLuQ6kEXNinHEWT_tGjYGGQdo63zgkAOvgJJK4Y2hhwC7sM8vZ58/exec";
+</div>
 
+<script>
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmjsXL_PnAh0uIfLuQ6kEXNinHEWT_tGjYGGQdo63zgkAOvgJJK4Y2hhwC7sM8vZ58/exec";
 const firebaseConfig = {
     apiKey: "AIzaSyASxcZep_OpFzc2EML2sUMRuK8rDJXv-cg",
     authDomain: "kanto-badminton-app.firebaseapp.com",
@@ -202,8 +224,7 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            allMatches: [],
-            allRecords: [],
+            allMatches: [], allRecords: [],
             currentTab: { gender: '1', division: 1 }, 
             tabList: [
                 { id: '1m', name: '1部 男子', gender: '1', division: 1 },
@@ -216,14 +237,11 @@ createApp({
     computed: {
         backNumberMap() {
             const map = {};
-            if (!this.allRecords) return map;
             this.allRecords.forEach(record => {
                 try {
                     const players = JSON.parse(record.player_reg);
                     const univ = record.univ_name.trim();
-                    players.forEach(p => {
-                        if (p.name && p.back_number) map[`${univ}_${p.name.trim()}`] = `[${p.back_number}] `;
-                    });
+                    players.forEach(p => { if (p.name && p.back_number) map[`${univ}_${p.name.trim()}`] = p.back_number; });
                 } catch (e) {}
             });
             return map;
@@ -247,10 +265,7 @@ createApp({
                 if (!groups[date]) groups[date] = [];
                 groups[date].push(m);
             });
-            return Object.keys(groups).sort().reduce((obj, key) => {
-                obj[key] = groups[key];
-                return obj;
-            }, {});
+            return groups;
         }
     },
     async mounted() {
@@ -258,7 +273,6 @@ createApp({
             const res = await fetch(GAS_API_URL);
             const data = await res.json();
             this.allRecords = data.records;
-            console.log("名簿取得成功:", this.allRecords.length, "件");
         } catch (e) { console.error(e); }
 
         db.collection('matches').orderBy('sortOrder', 'asc').onSnapshot(qs => {
@@ -280,10 +294,8 @@ createApp({
             g.scores.forEach((sc, i) => {
                 if ((g.gameStatus && g.gameStatus[i]) || s === 'finished') {
                     const retired = g.retired ? g.retired[i] : null;
-                    if (retired === 'h') a++;
-                    else if (retired === 'a') h++;
-                    else if (sc.h > sc.a) h++;
-                    else if (sc.a > sc.h) a++;
+                    if (retired === 'h') a++; else if (retired === 'a') h++;
+                    else if (sc.h > sc.a) h++; else if (sc.a > sc.h) a++;
                 }
             });
             return { home: h, away: a };
@@ -299,7 +311,7 @@ createApp({
                 const color = rS > cS ? 'text-danger' : 'text-primary';
                 return `<div class="${color} fw-bold">${rS > cS ? '○' : '●'} ${rS}-${cS}</div>`;
             }
-            return `<div class="text-muted small">No.${(m.sortOrder || 0) + 1}<br>${rS}-${cS}</div>`;
+            return `<div class="text-muted small">${rS}-${cS}</div>`;
         }
     }
 }).mount('#app');
