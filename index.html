@@ -58,60 +58,59 @@
     
     /* --- スマホ最適化（768px以下） --- */
     @media (max-width: 768px) {
-        .container-fluid { padding-left: 5px !important; padding-right: 5px !important; }
-        
-        /* 1. 行全体を横並び（row）に戻し、中央揃えにする */
+        /* 1. 行の設定：横並びを維持し、端から端まで使う */
         .game-detail-row {
-            flex-direction: row !important; 
-            flex-wrap: wrap !important; /* 種目名だけ上に逃がすため */
-            padding: 15px 2px !important;
-            justify-content: space-between;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important; /* 折り返さない */
+            justify-content: space-between !important;
             align-items: center !important;
+            padding: 8px 4px !important;
         }
 
-        /* 2. 種目名（1Sなど）は一番上に独立させる */
+        /* 2. 種目名：PC同様、あるいは少し小さくして左端または上部に配置 */
+        /* ここでは選手名とスコアの邪魔にならないよう、高さを抑えます */
         .game-type-box {
-            width: 100% !important; 
-            text-align: center !important;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            width: 45px !important; /* 幅をギュッと絞る */
+            min-width: 45px !important;
+            border-bottom: none !important;
+            margin-bottom: 0 !important;
+            background: #f8f9fa;
+            border-right: 1px solid #eee;
+            align-self: stretch;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .game-type-label { font-size: 1.8rem !important; }
+        .game-type-label { font-size: 0.9rem !important; }
 
-        /* 3. 選手エリア：左右に均等に配置 */
-        .player-box { 
-            flex: 1 !important; /* 左右の幅を自動調整 */
+        /* 3. 選手エリア：左右に配置 */
+        .player-area { 
+            flex: 1 !important; /* 均等に広がる */
             width: auto !important;
             padding: 0 5px !important;
         }
-        .player-name-big { font-size: 1.1rem !important; }
+        .player-name { font-size: 0.85rem !important; }
+        .back-number { font-size: 0.65rem !important; padding: 0 2px !important; }
 
-        /* 4. スコアエリア：ここを「縦並び」にする */
-        .scores-container { 
-            width: auto !important;
-            flex-direction: column !important; /* ★縦に積む設定 */
-            margin: 0 10px !important;
-            gap: 5px !important;
-            order: 0 !important; /* 左右の間に挟む */
+        /* 4. スコアエリア：中央にコンパクトに配置 */
+        .d-flex.justify-content-center.flex-grow-1 {
+            flex-grow: 0 !important; /* 勝手に広がらないように */
+            display: flex !important;
+            flex-direction: row !important; /* 横に並べる */
+            gap: 2px !important;
         }
-        
-        .score-unit-card { 
-            min-width: 75px !important; 
-            padding: 2px 5px !important;
-            display: flex;
-            flex-direction: row; /* カード内（数字）は横並び */
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
+
+        /* 各ゲーム（1G, 2G..）の箱 */
+        .score-unit {
+            min-width: 38px !important; /* スマホ用に細く */
+            padding: 2px 0 !important;
+            margin: 0 !important;
         }
-        
-        .score-val-huge { font-size: 1.3rem !important; }
-        /* 「1G」などの文字を数字の横に小さく配置 */
-        .score-unit-card .text-muted {
-            border-bottom: none !important;
-            margin-bottom: 0 !important;
-            font-size: 0.5rem !important;
-        }
+        .score-unit div:first-child { font-size: 0.45rem !important; } /* "1G"などの文字 */
+        .score-unit .fw-bold { font-size: 0.75rem !important; } /* "21-15"などの数字 */
+
+        /* 獲得ゲーム数（◯G）のバッジ */
+        .badge-score { font-size: 0.65rem !important; padding: 2px 4px !important; }
     }
         
         
