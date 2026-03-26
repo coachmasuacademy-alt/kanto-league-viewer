@@ -279,13 +279,15 @@ createApp({
             return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
         },
         leagueUnivs() {
-            const univMap = new Map();
-            this.filteredMatches.forEach(m => {
-                if (m.homeUniv && m.homeRank) univMap.set(Number(m.homeRank), m.homeUniv);
-                if (m.awayUniv && m.awayRank) univMap.set(Number(m.awayRank), m.awayUniv);
-            });
-            return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
-        },
+    const univSet = new Set();
+    this.filteredMatches.forEach(m => {
+        if (m.homeUniv) univSet.add(m.homeUniv.trim());
+        if (m.awayUniv) univSet.add(m.awayUniv.trim());
+    });
+    // 配列にして、あいうえお順、または特定の順序でソートする
+    return Array.from(univSet).sort();
+},
+
         groupedMatches() {
             const groups = {};
             this.filteredMatches.forEach(m => {
@@ -328,19 +330,34 @@ createApp({
             });
             return { home: h, away: a };
         },
+
         getMatchResult(row, col) {
-            const m = this.filteredMatches.find(m => (m.homeUniv === row && m.awayUniv === col) || (m.homeUniv === col && m.awayUniv === row));
-            if (!m) return '-';
-            const s = this.getMatchScore(m);
-            const isH = m.homeUniv === row;
-            const rS = isH ? s.home : s.away;
-            const cS = isH ? s.away : s.home;
-            if (m.status === 'finished') {
-                const color = rS > cS ? 'text-danger' : 'text-primary';
-                return `<div class="${color} fw-bold">${rS > cS ? '○' : '●'} ${rS}-${cS}</div>`;
-            }
-            return `<div class="text-muted small">${rS}-${cS}</div>`;
-        }
+    // 自分自身との対戦はスキップ
+    if (row === col) return '-';
+
+    // row（縦軸）がホームの場合、またはrowがアウェイの場合の両方を探す
+    const m = this.filteredMatches.find(m => 
+        (m.homeUniv?.trim() === row && m.awayUniv?.trim() === col) || 
+        (m.homeUniv?.trim() === col && m.awayUniv?.trim() === row)
+    );
+
+    if (!m) return '-';
+
+    const s = this.getMatchScore(m);
+    
+    // 表示している「行(row)」の大学が、この試合のどちら側（Home or Away）か判定
+    const isRowHome = m.homeUniv.trim() === row;
+    const rowScore = isRowHome ? s.home : s.away;
+    const colScore = isRowHome ? s.away : s.home;
+
+    if (m.status === 'finished') {
+        const isWin = rowScore > colScore;
+        const color = isWin ? 'text-danger' : 'text-primary';
+        const mark = isWin ? '○' : '●';
+        return `<div class="${color} fw-bold">${mark} ${rowScore}-${colScore}</div>`;
+    }
+    return `<div class="text-muted small">${rowScore}-${colScore}</div>`;
+}
     }
 }).mount('#app');
 </script>
