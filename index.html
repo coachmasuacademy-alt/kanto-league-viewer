@@ -51,35 +51,64 @@
     }
 
     /* --- スマホ最適化（768px以下） --- */
+    /* --- スマホ最適化（768px以下） --- */
     @media (max-width: 768px) {
         /* 横幅を限界まで使う */
         .container-fluid { padding-left: 5px !important; padding-right: 5px !important; }
         
         /* カードヘッダーの調整 */
         .card-header { padding: 12px 10px !important; }
-        .match-header-title { font-size: 1.1rem !important; }
+        .match-header-title { font-size: 1.15rem !important; }
 
-        /* 試合詳細行：横並びが厳しい場合は自動で折り返しを許可 */
+        /* 1. 試合の行を「縦並び」に強制変更して重なりを解消 */
         .game-detail-row {
-            flex-wrap: wrap !important;
-            padding: 15px 5px !important;
+            flex-direction: column !important; /* 縦に積む */
+            padding: 20px 5px !important;
+            align-items: center !important;
+        }
+
+        /* 2. 種目名（1S, 1Dなど）を一番上の行に独立させて巨大化 */
+        .game-type-box {
+            width: 100% !important; /* 横幅いっぱい使う */
+            text-align: center !important;
+            margin-bottom: 10px;
+        }
+        .game-type-label { 
+            font-size: 2.5rem !important; /* さらに大きく */
+            display: inline-block;
+            border-bottom: 3px solid #0d6efd; /* 下線で区切りを明確に */
+            padding-bottom: 5px;
+            line-height: 1;
         }
         
-        /* 選手エリア：幅を広げて名前を大きく見せる */
-        .player-box { width: 35% !important; }
+        /* 3. 選手エリア：名前を中央に配置して見やすく */
+        .player-box { 
+            width: 100% !important; 
+            text-align: center !important; 
+            padding: 8px 0 !important;
+        }
+        .player-name-big { font-size: 1.4rem !important; } /* 名前も一回り大きく */
         
-        /* スコアエリア：スマホでは中央下に大きく配置 */
+        /* 4. スコアエリア：選手の下に大きく配置 */
         .scores-container { 
             width: 100% !important; 
-            order: 3; 
-            margin-top: 12px; 
+            order: 0 !important; /* 自然な並び順（種目→選手→スコア）に */
+            margin: 15px 0 !important; 
             display: flex; 
             justify-content: center; 
-            gap: 8px; 
+            gap: 12px; 
         }
         
-        .score-unit-card { min-width: 90px; padding: 12px 4px; }
-        .score-val-huge { font-size: 1.9rem !important; } /* スマホでは点数をさらに巨大化 */
+        .score-unit-card { 
+            min-width: 100px !important; /* スコアボックスをさらに幅広く */
+            padding: 12px 5px !important; 
+            background-color: #fff;
+            border: 2px solid #dee2e6;
+        }
+        .score-val-huge { 
+            font-size: 2.5rem !important; /* 点数をドーンと巨大化 */
+        }
+    }
         
         .game-type-box {
         width: 120px !important; /* PCでの表示幅をしっかり固定 */
