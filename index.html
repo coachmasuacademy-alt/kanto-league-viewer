@@ -279,13 +279,22 @@ createApp({
             return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
         },
         leagueUnivs() {
-    const univSet = new Set();
+    const univMap = new Map();
     this.filteredMatches.forEach(m => {
-        if (m.homeUniv) univSet.add(m.homeUniv.trim());
-        if (m.awayUniv) univSet.add(m.awayUniv.trim());
+        // homeRankとawayRankを確実に数値(Number)として扱う
+        if (m.homeUniv && m.homeRank !== undefined) {
+            univMap.set(Number(m.homeRank), m.homeUniv.trim());
+        }
+        if (m.awayUniv && m.awayRank !== undefined) {
+            univMap.set(Number(m.awayRank), m.awayUniv.trim());
+        }
     });
-    // 配列にして、あいうえお順、または特定の順序でソートする
-    return Array.from(univSet).sort();
+
+    // 1. キー（順位）を取り出して数値順に並べ替え
+    // 2. 並べ替えた順に大学名だけの配列を作る
+    return Array.from(univMap.entries())
+        .sort((a, b) => a[0] - b[0]) // 1位から順に昇順ソート
+        .map(e => e[1]);
 },
 
         groupedMatches() {
@@ -332,31 +341,26 @@ createApp({
         },
 
         getMatchResult(row, col) {
-    // 自分自身との対戦はスキップ
-    if (row === col) return '-';
+    const rowU = row.trim();
+    const colU = col.trim();
 
-    // row（縦軸）がホームの場合、またはrowがアウェイの場合の両方を探す
     const m = this.filteredMatches.find(m => 
-        (m.homeUniv?.trim() === row && m.awayUniv?.trim() === col) || 
-        (m.homeUniv?.trim() === col && m.awayUniv?.trim() === row)
+        (m.homeUniv?.trim() === rowU && m.awayUniv?.trim() === colU) || 
+        (m.homeUniv?.trim() === colU && m.awayUniv?.trim() === rowU)
     );
 
     if (!m) return '-';
-
-    const s = this.getMatchScore(m);
     
-    // 表示している「行(row)」の大学が、この試合のどちら側（Home or Away）か判定
-    const isRowHome = m.homeUniv.trim() === row;
-    const rowScore = isRowHome ? s.home : s.away;
-    const colScore = isRowHome ? s.away : s.home;
+    const s = this.getMatchScore(m);
+    const isRowHome = m.homeUniv.trim() === rowU;
+    const rS = isRowHome ? s.home : s.away;
+    const cS = isRowHome ? s.away : s.home;
 
     if (m.status === 'finished') {
-        const isWin = rowScore > colScore;
-        const color = isWin ? 'text-danger' : 'text-primary';
-        const mark = isWin ? '○' : '●';
-        return `<div class="${color} fw-bold">${mark} ${rowScore}-${colScore}</div>`;
+        const win = rS > cS;
+        return `<div class="${win ? 'text-danger' : 'text-primary'} fw-bold">${win ? '○' : '●'} ${rS}-${cS}</div>`;
     }
-    return `<div class="text-muted small">${rowScore}-${colScore}</div>`;
+    return `<div class="text-muted small">${rS}-${cS}</div>`;
 }
     }
 }).mount('#app');
