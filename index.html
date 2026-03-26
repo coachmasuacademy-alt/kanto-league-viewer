@@ -50,7 +50,12 @@
         padding: 8px 2px; min-width: 70px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    /* --- スマホ最適化（768px以下） --- */
+.game-type-box {
+        width: 120px !important; /* PCでの表示幅をしっかり固定 */
+        flex-shrink: 0;          /* 他の要素に押されて潰れないようにする */
+        text-align: center;
+    }
+    
     /* --- スマホ最適化（768px以下） --- */
     @media (max-width: 768px) {
         /* 横幅を限界まで使う */
@@ -110,11 +115,7 @@
         }
     }
         
-        .game-type-box {
-        width: 120px !important; /* PCでの表示幅をしっかり固定 */
-        flex-shrink: 0;          /* 他の要素に押されて潰れないようにする */
-        text-align: center;
-    }
+        
 
         /* 星取表のスクロール設定 */
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
