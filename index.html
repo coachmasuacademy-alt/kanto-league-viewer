@@ -12,116 +12,35 @@
     <style>
         body { background-color: #f4f7f9; font-family: "Helvetica Neue", Arial, sans-serif; margin: 0; padding: 0; }
         .header-banner { background: linear-gradient(135deg, #1a1e21 0%, #0d6efd 100%); color: white; }
-        .league-table { background: white; border-radius: 12px; overflow: hidden; table-layout: fixed; }
+        .league-table { background: white; border-radius: 12px; overflow: hidden; table-layout: fixed; font-size: 0.8rem; min-width: 550px; }
         .league-table th, .league-table td { text-align: center; vertical-align: middle; border: 1px solid #dee2e6; height: 80px; padding: 4px; }
-        .table-primary-light { background-color: #e7f1ff; font-weight: bold; width: 100px; }
+        .table-primary-light { background-color: #e7f1ff !important; font-weight: bold; width: 100px; position: sticky; left: 0; z-index: 2; }
         .cell-self { background-color: #f1f3f5; }
         [v-cloak] { display: none; }
 
-        /* --- 視認性強化クラス（PC・スマホ共通） --- */
-    /* 大学名を大きく */
-    .match-header-title { font-size: 1.25rem; font-weight: 800; }
-    
-    /* 種目名（1S, 1Dなど）を巨大化 */
-    .game-type-label { 
-            font-size: 1.2rem !important; /* 1.4remから大幅アップ */
-            font-weight: 900 !important; 
-            color: #0d6efd; 
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-            line-height: 1;
-        }
-
-    /* 選手名を太く大きく */
-    .player-name-big { font-size: 1.1rem !important; font-weight: 700; color: #212529; line-height: 1.2; }
-    .back-number-tag { 
-        font-size: 0.75rem; background: #e9ecef; padding: 1px 4px; 
-        border-radius: 4px; color: #0d6efd; margin-right: 4px; font-weight: bold; 
-    }
-
-    /* スコア数字を最大化 */
-    .score-val-huge { 
-        font-size: 1.6rem !important; 
-        font-weight: 800 !important; 
-        font-family: 'Verdana', sans-serif; 
-        line-height: 1; 
-    }
-    .score-unit-card {
-        background: #ffffff; border: 2px solid #dee2e6; border-radius: 10px;
-        padding: 8px 2px; min-width: 70px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-.game-type-box {
-        width: 120px !important; /* PCでの表示幅をしっかり固定 */
-        flex-shrink: 0;          /* 他の要素に押されて潰れないようにする */
-        text-align: center;
-    }
-    
-    /* --- スマホ最適化（768px以下） --- */
-    @media (max-width: 768px) {
-        /* 1. 行の設定：横並びを維持し、端から端まで使う */
-        .game-detail-row {
-            flex-direction: row !important;
-            flex-wrap: nowrap !important; /* 折り返さない */
-            justify-content: space-between !important;
-            align-items: center !important;
-            padding: 8px 4px !important;
-        }
-
-        /* 2. 種目名：PC同様、あるいは少し小さくして左端または上部に配置 */
-        /* ここでは選手名とスコアの邪魔にならないよう、高さを抑えます */
-        .game-type-box {
-            width: 45px !important; /* 幅をギュッと絞る */
-            min-width: 45px !important;
-            border-bottom: none !important;
-            margin-bottom: 0 !important;
-            background: #f8f9fa;
-            border-right: 1px solid #eee;
-            align-self: stretch;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .game-type-label { font-size: 0.9rem !important; }
-
-        /* 3. 選手エリア：左右に配置 */
-        .player-area { 
-            flex: 1 !important; /* 均等に広がる */
-            width: auto !important;
-            padding: 0 5px !important;
-        }
-        .player-name { font-size: 0.85rem !important; }
-        .back-number { font-size: 0.65rem !important; padding: 0 2px !important; }
-
-        /* 4. スコアエリア：中央にコンパクトに配置 */
-        .d-flex.justify-content-center.flex-grow-1 {
-            flex-grow: 0 !important; /* 勝手に広がらないように */
-            display: flex !important;
-            flex-direction: row !important; /* 横に並べる */
-            gap: 2px !important;
-        }
-
-        /* 各ゲーム（1G, 2G..）の箱 */
-        .score-unit {
-            min-width: 38px !important; /* スマホ用に細く */
-            padding: 2px 0 !important;
-            margin: 0 !important;
-        }
-        .score-unit div:first-child { font-size: 0.45rem !important; } /* "1G"などの文字 */
-        .score-unit .fw-bold { font-size: 0.75rem !important; } /* "21-15"などの数字 */
-
-        /* 獲得ゲーム数（◯G）のバッジ */
-        .badge-score { font-size: 0.65rem !important; padding: 2px 4px !important; }
-    }
-        
-        
-
-        /* 星取表のスクロール設定 */
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
-        .league-table { font-size: 0.8rem; min-width: 550px; }
-        .table-primary-light { position: sticky; left: 0; z-index: 2; background-color: #e7f1ff !important; }
-
-        .player-name { line-height: 1.2; word-break: break-all; }
+        /* 視認性強化 */
+        .player-name { font-size: 1.1rem !important; font-weight: 700 !important; color: #212529 !important; line-height: 1.2; word-break: break-all; }
         .back-number { display: inline-block; background-color: #f0f0f0; padding: 1px 5px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: #007bff; margin-right: 4px; }
+        .game-type-label { font-size: 1.2rem !important; font-weight: 900 !important; color: #0d6efd; }
+        
+        /* スコア推移表（コンパクト版） */
+        .point-history-container { overflow-x: auto; background: #fff; border: 1px solid #dee2e6; margin-top: 5px; margin-bottom: 10px; }
+        .history-table { border-collapse: collapse; font-size: 0.75rem; table-layout: fixed; }
+        .history-table td { width: 22px; height: 26px; text-align: center; border: 1px solid #eee; padding: 0; vertical-align: middle; }
+        .history-label { width: 70px !important; background: #f8f9fa; font-weight: bold; position: sticky; left: 0; z-index: 1; border-right: 2px solid #ddd !important; }
+        .role-cell { width: 25px !important; background: #fff; font-weight: bold; }
+        .last-point { background-color: #e7f1ff; color: #0d6efd; font-weight: bold; }
+
+        /* アニメーション */
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+
+        @media (max-width: 768px) {
+            .player-name { font-size: 1.0rem !important; }
+            .game-type-box { width: 45px !important; min-width: 45px !important; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; }
+            .game-type-label { font-size: 0.9rem !important; }
+            .score-unit { min-width: 40px !important; }
+        }
     </style>
 </head>
 <body>
@@ -141,24 +60,57 @@
     </div>
 
     <div class="mb-5 px-1">
-        <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h6>
-        <div class="table-responsive shadow-sm">
-            <table class="table league-table m-0">
-                <thead>
-                    <tr>
-                        <th class="table-primary-light">大学名</th>
-                        <th v-for="univ in leagueUnivs" :key="univ">{{ univ }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(rowUniv, rIdx) in leagueUnivs" :key="rIdx">
-                        <td class="table-primary-light">{{ rowUniv }}</td>
-                        <td v-for="(colUniv, cIdx) in leagueUnivs" :key="cIdx" :class="{'cell-self': rIdx === cIdx}">
-                            <div v-if="rIdx !== cIdx" v-html="getMatchResult(rowUniv, colUniv)"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h6>
+                <div class="table-responsive shadow-sm">
+                    <table class="table league-table m-0">
+                        <thead>
+                            <tr>
+                                <th class="table-primary-light">大学名</th>
+                                <th v-for="univ in leagueUnivs" :key="univ">{{ univ }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(rowUniv, rIdx) in leagueUnivs" :key="rIdx">
+                                <td class="table-primary-light">{{ rowUniv }}</td>
+                                <td v-for="(colUniv, cIdx) in leagueUnivs" :key="cIdx" :class="{'cell-self': rIdx === cIdx}">
+                                    <div v-if="rIdx !== cIdx" v-html="getMatchResult(rowUniv, colUniv)"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <h6 class="fw-bold mb-3"><i class="bi bi-trophy"></i> 現在の順位</h6>
+                <div class="bg-white rounded shadow-sm border overflow-hidden">
+                    <table class="table table-sm m-0 text-center" style="font-size: 0.85rem;">
+                        <thead class="bg-light">
+                            <tr>
+                                <th style="width: 40px;">位</th>
+                                <th class="text-start">大学名</th>
+                                <th>勝</th>
+                                <th>敗</th>
+                                <th>得失差</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(rank, index) in universityRankings" :key="rank.name">
+                                <td class="fw-bold">{{ index + 1 }}</td>
+                                <td class="text-start fw-bold">{{ rank.name }}</td>
+                                <td class="text-primary">{{ rank.matchW }}</td>
+                                <td class="text-secondary">{{ rank.matchL }}</td>
+                                <td>{{ (rank.gameW - rank.gameL) > 0 ? '+' : '' }}{{ rank.gameW - rank.gameL }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="small text-muted mt-2 px-1" style="font-size: 0.7rem;">
+                    ※順位決定優先順位：1.勝利数、2.得失マッチ数差、3.得失ゲーム数差
+                </div>
+            </div>
         </div>
     </div>
 
@@ -173,68 +125,115 @@
             <div v-for="match in matches" :key="match.id" class="col-12">
                 <div class="card shadow-sm border-0 mb-2">
                     <div class="card-header d-flex justify-content-between align-items-center py-2 px-3" 
-                         :class="match.isLive ? 'bg-primary text-white' : 'bg-light'">
+                         @click="toggleMatch(match.id)"
+                         :class="match.isLive ? 'bg-primary text-white' : 'bg-light'"
+                         style="cursor: pointer;">
                         <div class="small fw-bold">
                             <span v-if="match.isLive" class="badge bg-danger me-1 animate-pulse">LIVE</span>
-                            <span v-else-if="match.status === 'finished'" class="badge bg-success me-1">終了</span>
+                            <span v-else-if="match.status && match.status.toLowerCase() === 'finished'" class="badge bg-success me-1">終了</span>
+                            <span v-else class="badge bg-secondary me-1">予定</span>
                             {{ match.homeUniv }} vs {{ match.awayUniv }}
+                            <i class="bi ms-1" :class="expandedMatches.includes(match.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                         </div>
-                        <div class="h5 m-0 fw-bold" v-if="match.isLive || match.status === 'finished'">
+                        <div class="h5 m-0 fw-bold">
                             {{ getMatchScore(match).home }} - {{ getMatchScore(match).away }}
                         </div>
                     </div>
 
-                    <div class="card-body p-0" v-if="match.isLive || match.status === 'finished'">
-    <div v-for="game in match.games" :key="game.type" class="border-bottom d-flex align-items-center game-detail-row bg-white">
-        
-        <div class="game-type-box">
-            <div class="game-type-label text-center">{{ game.type }}</div>
-        </div>
-                            
-                            <div class="player-area text-end pe-1" style="width: 28%;">
-                                <div class="player-name fw-bold">
-                                    {{ game.homeP1 }}<span class="back-number ms-1" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()]">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()] }}</span>
+                    <div class="card-body p-0" v-show="expandedMatches.includes(match.id)">
+                        <div v-for="game in match.games" :key="game.type" class="border-bottom bg-white">
+                            <div class="d-flex align-items-center py-2">
+                                <div class="game-type-box" style="width: 50px; text-align: center;">
+                                    <div class="game-type-label">{{ game.type }}</div>
                                 </div>
-                                <div v-if="game.homeP2" class="player-name small text-muted">
-                                    {{ game.homeP2 }}<span class="back-number ms-1" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()]">{{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()] }}</span>
-                                </div>
-                                <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                                      class="badge rounded-pill bg-primary mt-1 badge-score">
-                                    {{ getIndividualGameCount(game, match.status).home }}G
-                                </span>
-                            </div>
-
-                            <div class="d-flex justify-content-center flex-grow-1">
-                                <div v-for="n in 3" :key="n" class="score-unit border rounded bg-light text-center" style="min-width: 55px; margin: 0 2px; padding: 4px;">
-                                    <div class="text-muted mb-1" style="font-size: 0.5rem; border-bottom: 1px solid #e0e0e0;">{{ n }}G</div>
-                                    <div class="fw-bold" style="font-size: 0.9rem; letter-spacing: -1px;">
-                                        {{ game.scores[n-1].h }}-{{ game.scores[n-1].a }}
+                                
+                                <div class="player-area text-end pe-1" style="width: 30%;">
+                                    <div class="player-name">
+                                        {{ game.homeP1 || '---' }}
+                                        <span class="back-number" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()]">
+                                            {{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()] }}
+                                        </span>
                                     </div>
-                                    <div v-if="game.retired && game.retired[n-1]" class="text-danger" style="font-size: 0.5rem; font-weight: bold;">棄権</div>
+                                    <div v-if="game.homeP2" class="player-name">
+                                        {{ game.homeP2 }}
+                                        <span class="back-number" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()]">
+                                            {{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()] }}
+                                        </span>
+                                    </div>
+                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                          class="badge rounded-pill bg-primary badge-score">
+                                        {{ getIndividualGameCount(game, match.status).home }}G
+                                    </span>
+                                </div>
+
+                                <div class="d-flex justify-content-center flex-grow-1">
+                                    <div v-for="n in 3" :key="n" class="score-unit border rounded bg-light text-center mx-1 px-1">
+                                        <div class="text-muted" style="font-size: 0.5rem;">{{ n }}G</div>
+                                        <div class="fw-bold" style="font-size: 0.85rem;">
+                                            {{ (game.scores && game.scores[n-1]) ? game.scores[n-1].h + '-' + game.scores[n-1].a : '0-0' }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="player-area text-start ps-1" style="width: 30%;">
+                                    <div class="player-name">
+                                        <span class="back-number" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()]">
+                                            {{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()] }}
+                                        </span>
+                                        {{ game.awayP1 || '---' }}
+                                    </div>
+                                    <div v-if="game.awayP2" class="player-name">
+                                        <span class="back-number" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()]">
+                                            {{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()] }}
+                                        </span>
+                                        {{ game.awayP2 }}
+                                    </div>
+                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                          class="badge rounded-pill bg-danger badge-score">
+                                        {{ getIndividualGameCount(game, match.status).away }}G
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="player-area text-start ps-1" style="width: 28%;">
-                                <div class="player-name fw-bold">
-                                    <span class="back-number me-1" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()]">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()] }}</span>{{ game.awayP1 }}
-                                </div>
-                                <div v-if="game.awayP2" class="player-name small text-muted">
-                                    <span class="back-number me-1" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()]">{{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()] }}</span>{{ game.awayP2 }}
-                                </div>
-                                <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                                      class="badge rounded-pill bg-danger mt-1 badge-score">
-                                    {{ getIndividualGameCount(game, match.status).away }}G
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                            <div v-if="game.pointHistory && ( (game.pointHistory[0] && game.pointHistory[0].length > 0) || (game.pointHistory[1] && game.pointHistory[1].length > 0) || (game.pointHistory[2] && game.pointHistory[2].length > 0) )" class="pb-2">
+    
+    <div class="mx-2 mb-1 p-1 bg-light border rounded text-center cursor-pointer shadow-sm" 
+         @click="toggleHistory(match.id + game.type)"
+         style="cursor: pointer; font-size: 0.75rem; color: #0d6efd; font-weight: bold;">
+        <i class="bi" :class="expandedHistories.includes(match.id + game.type) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+        {{ expandedHistories.includes(match.id + game.type) ? '▲ 点数推移を隠す' : '▼ 全ゲームの点数推移を表示' }}
+    </div>
+
+    <div v-show="expandedHistories.includes(match.id + game.type)" class="px-2">
+        <div v-for="n in 3" :key="n">
+            <div v-if="game.pointHistory[n-1] && game.pointHistory[n-1].length > 0" class="mb-3">
+                <div class="ps-1 small fw-bold text-muted mb-1 mt-2" style="font-size: 0.6rem; border-left: 3px solid #0d6efd;">
+                    {{ n }}G Point Flow
+                </div>
+                <div class="point-history-container shadow-sm rounded border">
+                    <table class="history-table">
+                        <tr>
+                            <td class="history-label text-truncate">{{ game.homeP1 }}</td>
+                            <td class="role-cell">{{ (game.initialServer && game.initialServer[n-1] === 'h') ? 'S' : 'R' }}</td>
+                            <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'h')" :key="idx" 
+                                :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
+                                {{ p }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="history-label text-truncate">{{ game.awayP1 }}</td>
+                            <td class="role-cell">{{ (game.initialServer && game.initialServer[n-1] === 'a') ? 'S' : 'R' }}</td>
+                            <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'a')" :key="idx"
+                                :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
+                                {{ p }}
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
+</div></div></div> </div></div></div></div></div><script>
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmjsXL_PnAh0uIfLuQ6kEXNinHEWT_tGjYGGQdo63zgkAOvgJJK4Y2hhwC7sM8vZ58/exec";
 const firebaseConfig = {
     apiKey: "AIzaSyASxcZep_OpFzc2EML2sUMRuK8rDJXv-cg",
@@ -252,7 +251,7 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            allMatches: [], allRecords: [],
+            allMatches: [], allRecords: [], expandedMatches: [], expandedHistories: [],
             currentTab: { gender: '1', division: 1 }, 
             tabList: [
                 { id: '1m', name: '1部 男子', gender: '1', division: 1 },
@@ -263,6 +262,35 @@ createApp({
         }
     },
     computed: {
+        universityRankings() {
+            const stats = {};
+            this.leagueUnivs.forEach(univ => {
+                stats[univ] = { name: univ, matchW: 0, matchL: 0, gameW: 0, gameL: 0, setW: 0, setL: 0 };
+            });
+
+            this.filteredMatches.forEach(m => {
+                const s = this.getMatchScore(m);
+                const hName = (m.homeUniv || '').trim();
+                const aName = (m.awayUniv || '').trim();
+                if ((s.home + s.away > 0) && stats[hName] && stats[aName]) {
+                    stats[hName].gameW += s.home; stats[hName].gameL += s.away;
+                    stats[aName].gameW += s.away; stats[aName].gameL += s.home;
+                    if (s.home > s.away) { stats[hName].matchW++; stats[aName].matchL++; }
+                    else if (s.away > s.home) { stats[aName].matchW++; stats[hName].matchL++; }
+                    m.games.forEach(g => {
+                        const c = this.getIndividualGameCount(g, m.status);
+                        stats[hName].setW += c.home; stats[hName].setL += c.away;
+                        stats[aName].setW += c.away; stats[aName].setL += c.home;
+                    });
+                }
+            });
+
+            return Object.values(stats).sort((a, b) => {
+                if (b.matchW !== a.matchW) return b.matchW - a.matchW;
+                if ((b.gameW - b.gameL) !== (a.gameW - a.gameL)) return (b.gameW - b.gameL) - (a.gameW - a.gameL);
+                return (b.setW - b.setL) - (a.setW - a.setL);
+            });
+        },
         backNumberMap() {
             const map = {};
             this.allRecords.forEach(record => {
@@ -279,24 +307,13 @@ createApp({
             return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
         },
         leagueUnivs() {
-    const univMap = new Map();
-    this.filteredMatches.forEach(m => {
-        // homeRankとawayRankを確実に数値(Number)として扱う
-        if (m.homeUniv && m.homeRank !== undefined) {
-            univMap.set(Number(m.homeRank), m.homeUniv.trim());
-        }
-        if (m.awayUniv && m.awayRank !== undefined) {
-            univMap.set(Number(m.awayRank), m.awayUniv.trim());
-        }
-    });
-
-    // 1. キー（順位）を取り出して数値順に並べ替え
-    // 2. 並べ替えた順に大学名だけの配列を作る
-    return Array.from(univMap.entries())
-        .sort((a, b) => a[0] - b[0]) // 1位から順に昇順ソート
-        .map(e => e[1]);
-},
-
+            const univMap = new Map();
+            this.filteredMatches.forEach(m => {
+                if (m.homeUniv && m.homeRank !== undefined) univMap.set(Number(m.homeRank), m.homeUniv.trim());
+                if (m.awayUniv && m.awayRank !== undefined) univMap.set(Number(m.awayRank), m.awayUniv.trim());
+            });
+            return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
+        },
         groupedMatches() {
             const groups = {};
             this.filteredMatches.forEach(m => {
@@ -315,12 +332,17 @@ createApp({
         } catch (e) { console.error(e); }
 
         db.collection('matches').orderBy('sortOrder', 'asc').onSnapshot(qs => {
-            this.allMatches = qs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const matches = qs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            this.allMatches = matches;
+            matches.forEach(m => {
+                if (m.isLive && !this.expandedMatches.includes(m.id)) this.expandedMatches.push(m.id);
+            });
         });
     },
     methods: {
         switchTab(g, d) { this.currentTab.gender = g; this.currentTab.division = d; },
         getMatchScore(m) {
+            if (!m || !m.games) return { home: 0, away: 0 };
             let h = 0, a = 0;
             m.games.forEach(g => {
                 const c = this.getIndividualGameCount(g, m.status);
@@ -330,38 +352,57 @@ createApp({
         },
         getIndividualGameCount(g, s) {
             let h = 0, a = 0;
+            if (!g || !g.scores) return { home: 0, away: 0 };
+            const isFinishedStatus = s && s.toLowerCase() === 'finished';
             g.scores.forEach((sc, i) => {
-                if ((g.gameStatus && g.gameStatus[i]) || s === 'finished') {
+                if (!sc) return;
+                if ((g.gameStatus && g.gameStatus[i]) || isFinishedStatus) {
                     const retired = g.retired ? g.retired[i] : null;
                     if (retired === 'h') a++; else if (retired === 'a') h++;
-                    else if (sc.h > sc.a) h++; else if (sc.a > sc.h) a++;
+                    else if (Number(sc.h) > Number(sc.a)) h++; else if (Number(sc.a) > Number(sc.h)) a++;
                 }
             });
             return { home: h, away: a };
         },
-
         getMatchResult(row, col) {
-    const rowU = row.trim();
-    const colU = col.trim();
-
-    const m = this.filteredMatches.find(m => 
-        (m.homeUniv?.trim() === rowU && m.awayUniv?.trim() === colU) || 
-        (m.homeUniv?.trim() === colU && m.awayUniv?.trim() === rowU)
-    );
-
-    if (!m) return '-';
-    
-    const s = this.getMatchScore(m);
-    const isRowHome = m.homeUniv.trim() === rowU;
-    const rS = isRowHome ? s.home : s.away;
-    const cS = isRowHome ? s.away : s.home;
-
-    if (m.status === 'finished') {
-        const win = rS > cS;
-        return `<div class="${win ? 'text-danger' : 'text-primary'} fw-bold">${win ? '○' : '●'} ${rS}-${cS}</div>`;
-    }
-    return `<div class="text-muted small">${rS}-${cS}</div>`;
-}
+            const rowU = (row || '').trim();
+            const colU = (col || '').trim();
+            const m = this.filteredMatches.find(m => {
+                const h = (m.homeUniv || '').trim();
+                const a = (m.awayUniv || '').trim();
+                return (h === rowU && a === colU) || (h === colU && a === rowU);
+            });
+            if (!m) return '<span class="text-muted">-</span>';
+            const s = this.getMatchScore(m);
+            const isRowHome = (m.homeUniv || '').trim() === rowU;
+            const rS = isRowHome ? s.home : s.away;
+            const cS = isRowHome ? s.away : s.home;
+            const isFinished = m.status && m.status.toLowerCase() === 'finished';
+            if (isFinished) {
+                const win = rS > cS;
+                return `<div class="${win ? 'text-danger' : 'text-secondary'} fw-bold" style="font-size: 1.2rem; line-height: 1;">${win ? '〇' : '×'}</div><div class="text-muted" style="font-size: 0.7rem; margin-top: 2px;">${rS}-${cS}</div>`;
+            }
+            return `<div class="text-muted small">${rS}-${cS}</div>`;
+        },
+        toggleHistory(id) {
+            const index = this.expandedHistories.indexOf(id);
+            if (index > -1) this.expandedHistories.splice(index, 1);
+            else this.expandedHistories.push(id);
+        },
+        toggleMatch(matchId) {
+            const index = this.expandedMatches.indexOf(matchId);
+            if (index > -1) this.expandedMatches.splice(index, 1);
+            else this.expandedMatches.push(matchId);
+        },
+        getPointFlow(history, side) {
+            if (!history || !Array.isArray(history)) return [];
+            let currentH = 0, currentA = 0;
+            return history.map(winner => {
+                if (winner === 'h') currentH++; else currentA++;
+                if (side === 'h') return winner === 'h' ? currentH : '';
+                return winner === 'a' ? currentA : '';
+            });
+        }
     }
 }).mount('#app');
 </script>
