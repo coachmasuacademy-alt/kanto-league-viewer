@@ -27,7 +27,19 @@
         .point-history-container { overflow-x: auto; background: #fff; border: 1px solid #dee2e6; margin-top: 5px; margin-bottom: 10px; }
         .history-table { border-collapse: collapse; font-size: 0.75rem; table-layout: fixed; }
         .history-table td { width: 22px; height: 26px; text-align: center; border: 1px solid #eee; padding: 0; vertical-align: middle; }
-        .history-label { width: 70px !important; background: #f8f9fa; font-weight: bold; position: sticky; left: 0; z-index: 1; border-right: 2px solid #ddd !important; }
+        .history-label { 
+    width: 90px !important; /* 幅を少し広げる */
+    background: #f8f9fa; 
+    font-weight: bold; 
+    position: sticky; 
+    left: 0; 
+    z-index: 1; 
+    border-right: 2px solid #ddd !important;
+    font-size: 0.65rem; /* 名前が長い場合に備えて少し小さくする */
+    white-space: nowrap; /* 折り返さない */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 溢れた場合は「...」にする */
+}
         .role-cell { width: 25px !important; background: #fff; font-weight: bold; }
         .last-point { background-color: #e7f1ff; color: #0d6efd; font-weight: bold; }
 
@@ -35,6 +47,24 @@
         .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
 
+.border-winner-home { 
+    border-width: 2px !important; 
+    border-color: #add8e6 !important; /* 淡い青（ライトブルー） */
+    background-color: #f0f8ff !important; /* ほんのり青背景 */
+}
+.border-winner-away { 
+    border-width: 2px !important; 
+    border-color: #ffb6c1 !important; /* 淡い赤（ライトピンク） */
+    background-color: #fff5f5 !important; /* ほんのり赤背景 */
+}
+
+.score-unit { transition: all 0.2s ease; } 
+
+/* 負けた方や未入力の枠（より薄く） */
+.score-unit:not(.border-winner-home):not(.border-winner-away) {
+    border-color: #ebebeb !important;
+    opacity: 0.5;
+}
         @media (max-width: 768px) {
             .player-name { font-size: 1.0rem !important; }
             .game-type-box { width: 45px !important; min-width: 45px !important; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; }
@@ -148,18 +178,18 @@
                                 </div>
                                 
                                 <div class="player-area text-end pe-1" style="width: 30%;">
-                                    <div class="player-name">
-                                        {{ game.homeP1 || '---' }}
-                                        <span class="back-number" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()]">
-                                            {{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP1 || '').trim()] }}
-                                        </span>
-                                    </div>
-                                    <div v-if="game.homeP2" class="player-name">
-                                        {{ game.homeP2 }}
-                                        <span class="back-number" v-if="backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()]">
-                                            {{ backNumberMap[(match.homeUniv || '').trim() + '_' + (game.homeP2 || '').trim()] }}
-                                        </span>
-                                    </div>
+    <div class="player-name">
+        {{ formatName(game.homeP1) || '---' }}
+        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)]">
+            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)] }}
+        </span>
+    </div>
+    <div v-if="game.homeP2" class="player-name">
+        {{ formatName(game.homeP2) }}
+        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)]">
+            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)] }}
+        </span>
+    </div>
                                     <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
                                           class="badge rounded-pill bg-primary badge-score">
                                         {{ getIndividualGameCount(game, match.status).home }}G
@@ -167,7 +197,12 @@
                                 </div>
 
                                 <div class="d-flex justify-content-center flex-grow-1">
-                                    <div v-for="n in 3" :key="n" class="score-unit border rounded bg-light text-center mx-1 px-1">
+                                    <div v-for="n in 3" :key="n" 
+     class="score-unit border rounded text-center mx-1 px-1"
+     :class="{
+         'border-winner-home shadow-sm': game.scores && game.scores[n-1] && Number(game.scores[n-1].h) > Number(game.scores[n-1].a),
+         'border-winner-away shadow-sm': game.scores && game.scores[n-1] && Number(game.scores[n-1].a) > Number(game.scores[n-1].h)
+     }">
                                         <div class="text-muted" style="font-size: 0.5rem;">{{ n }}G</div>
                                         <div class="fw-bold" style="font-size: 0.85rem;">
                                             {{ (game.scores && game.scores[n-1]) ? game.scores[n-1].h + '-' + game.scores[n-1].a : '0-0' }}
@@ -176,18 +211,18 @@
                                 </div>
 
                                 <div class="player-area text-start ps-1" style="width: 30%;">
-                                    <div class="player-name">
-                                        <span class="back-number" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()]">
-                                            {{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP1 || '').trim()] }}
-                                        </span>
-                                        {{ game.awayP1 || '---' }}
-                                    </div>
-                                    <div v-if="game.awayP2" class="player-name">
-                                        <span class="back-number" v-if="backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()]">
-                                            {{ backNumberMap[(match.awayUniv || '').trim() + '_' + (game.awayP2 || '').trim()] }}
-                                        </span>
-                                        {{ game.awayP2 }}
-                                    </div>
+    <div class="player-name">
+        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)]">
+            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)] }}
+        </span>
+        {{ formatName(game.awayP1) || '---' }}
+    </div>
+    <div v-if="game.awayP2" class="player-name">
+        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)]">
+            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)] }}
+        </span>
+        {{ formatName(game.awayP2) }}
+    </div>
                                     <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
                                           class="badge rounded-pill bg-danger badge-score">
                                         {{ getIndividualGameCount(game, match.status).away }}G
@@ -212,23 +247,29 @@
                 </div>
                 <div class="point-history-container shadow-sm rounded border">
                     <table class="history-table">
-                        <tr>
-                            <td class="history-label text-truncate">{{ game.homeP1 }}</td>
-                            <td class="role-cell">{{ (game.initialServer && game.initialServer[n-1] === 'h') ? 'S' : 'R' }}</td>
-                            <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'h')" :key="idx" 
-                                :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
-                                {{ p }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="history-label text-truncate">{{ game.awayP1 }}</td>
-                            <td class="role-cell">{{ (game.initialServer && game.initialServer[n-1] === 'a') ? 'S' : 'R' }}</td>
-                            <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'a')" :key="idx"
-                                :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
-                                {{ p }}
-                            </td>
-                        </tr>
-                    </table>
+    <tr>
+        <td class="history-label text-truncate">
+            {{ formatName(game.homeP1) }}{{ game.homeP2 ? '・' + formatName(game.homeP2) : '' }}
+        </td>
+        <td class="text-center" style="width: 22px; border: 1px solid #eee;">0</td>
+        
+        <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'h')" :key="idx" 
+            :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
+            {{ p }}
+        </td>
+    </tr>
+    <tr>
+        <td class="history-label text-truncate">
+            {{ formatName(game.awayP1) }}{{ game.awayP2 ? '・' + formatName(game.awayP2) : '' }}
+        </td>
+        <td class="text-center" style="width: 22px; border: 1px solid #eee;">0</td>
+        
+        <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'a')" :key="idx"
+            :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
+            {{ p }}
+        </td>
+    </tr>
+</table>
                 </div>
             </div>
         </div>
@@ -292,16 +333,22 @@ createApp({
             });
         },
         backNumberMap() {
-            const map = {};
-            this.allRecords.forEach(record => {
-                try {
-                    const players = JSON.parse(record.player_reg);
-                    const univ = record.univ_name.trim();
-                    players.forEach(p => { if (p.name && p.back_number) map[`${univ}_${p.name.trim()}`] = p.back_number; });
-                } catch (e) {}
+    const map = {};
+    this.allRecords.forEach(record => {
+        try {
+            const players = JSON.parse(record.player_reg);
+            const univ = record.univ_name.trim();
+            players.forEach(p => { 
+                if (p.name && p.back_number) {
+                    // ここで名前を整形して登録
+                    const normalizedName = this.formatName(p.name);
+                    map[`${univ}_${normalizedName}`] = p.back_number; 
+                }
             });
-            return map;
-        },
+        } catch (e) {}
+    });
+    return map;
+},
         filteredMatches() {
             const label = this.currentTab.gender === '1' ? '男子' : '女子';
             return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
@@ -402,7 +449,15 @@ createApp({
                 if (side === 'h') return winner === 'h' ? currentH : '';
                 return winner === 'a' ? currentA : '';
             });
-        }
+        },
+
+formatName(name) {
+            if (!name) return '';
+            return name
+                .replace(/　/g, ' ')   // 全角スペースを半角に変換
+                .replace(/\s+/g, ' ')  // 連続するスペースを1つに統合
+                .trim();               // 前後の余白を削除
+            }
     }
 }).mount('#app');
 </script>
