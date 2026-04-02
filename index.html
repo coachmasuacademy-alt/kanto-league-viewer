@@ -71,17 +71,96 @@
             .game-type-label { font-size: 0.9rem !important; }
             .score-unit { min-width: 40px !important; }
         }
+
+.viewer-controls {
+            background: #fff;
+            border: 2px solid #0d6efd;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .viewing-active {
+            border-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        .progress-bar-container {
+            height: 4px;
+            width: 100%;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: #dc3545;
+            transition: width 0.1s linear;
+        }
+        .viewing-match-focus {
+            outline: 4px solid #ffc107;
+            outline-offset: -2px;
+        }
+
+/* 閲覧モード中、ライブ試合をカード形式で並べる設定 */
+.viewing-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.viewing-grid .col-live {
+    flex: 1 1 300px; /* 最低300px幅で、空きがあれば広がる */
+    max-width: 100%;
+}
+
+/* 閲覧モード中は詳細（点数推移など）を少しコンパクトにする */
+.viewing-active .card-body {
+    font-size: 0.9rem;
+}
+
+#viewing-header {
+    scroll-margin-top: 20px; /* スクロールした時に上に20pxの隙間を作る */
+}
     </style>
 </head>
 <body>
 <div id="app" class="container-fluid py-2 px-1" v-cloak>
 
-    <div class="header-banner shadow-sm rounded mb-3 text-center py-4">
+    <div class="header-banner shadow-sm rounded mb-3 text-center py-4" v-if="!isViewingMode">
         <h3 class="fw-bold m-0 text-white"><i class="bi bi-broadcast text-warning me-2"></i> ライブ速報・リーグ対戦表</h3>
         <p class="mb-0 mt-2 small opacity-75">関東学生バドミントン連盟 公式速報</p>
     </div>
 
-    <div class="nav nav-pills nav-fill bg-white p-1 rounded shadow-sm border mb-4">
+<div id="scroll-target" class="viewer-controls shadow-sm" :class="{'viewing-active': isViewingMode}">
+    <div class="d-flex align-items-center">
+        <div class="form-check form-switch me-3">
+            <input class="form-check-input" type="checkbox" id="viewModeSwitch" v-model="isViewingMode" @change="toggleViewingMode">
+            <label class="form-check-label fw-bold" for="viewModeSwitch">
+                <i class="bi bi-play-circle-fill me-1"></i>閲覧モード
+            </label>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="small text-muted me-2">切替(秒):</span>
+            <input type="number" class="form-control form-control-sm" v-model.number="viewIntervalSec" style="width: 60px;">
+        </div>
+    </div>
+    
+    <div class="flex-grow-1 small" v-if="isViewingMode">
+        <span v-if="activeLiveTabs.length > 0">
+    <span class="badge bg-danger me-2">自動巡回中</span>
+    {{ currentViewingIndex + 1 }} / {{ activeLiveTabs.length }} カテゴリー目 を表示中
+</span>
+        <span v-else class="text-danger">現在、進行中の試合はありません</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" :style="{ width: viewingProgress + '%' }"></div>
+        </div>
+    </div>
+</div>
+
+    <div class="nav nav-pills nav-fill bg-white p-1 rounded shadow-sm border mb-4" v-if="!isViewingMode">
         <button v-for="tab in tabList" :key="tab.id" class="nav-link py-2" 
                 :class="{ active: currentTab.gender === tab.gender && currentTab.division === tab.division }"
                 @click="switchTab(tab.gender, tab.division)" style="font-size: 0.85rem;">
@@ -89,7 +168,7 @@
         </button>
     </div>
 
-    <div class="mb-5 px-1">
+    <div class="mb-5 px-1" v-if="!isViewingMode">
         <div class="row g-3">
             <div class="col-lg-8">
                 <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h6>
@@ -144,16 +223,28 @@
         </div>
     </div>
 
-    <h6 class="fw-bold mb-4 px-1"><i class="bi bi-list-check"></i> 試合別詳細・オーダー速報</h6>
+    <h6 v-if="!isViewingMode" class="fw-bold mb-4 px-1">
+        <i class="bi bi-list-check"></i> 試合別詳細・オーダー速報
+    </h6>
+
+    <h4 v-if="isViewingMode" id="viewing-header" class="text-center fw-bold text-primary mb-4">
+        <i class="bi bi-play-circle-fill me-2"></i>{{ currentTabName }} - 進行中の試合
+    </h4>
 
     <div v-for="(matches, date) in groupedMatches" :key="date" class="mb-4">
-        <div class="fw-bold mb-2 border-bottom pb-1 px-1 text-primary" style="font-size: 0.9rem;">
+        
+        <div v-if="!isViewingMode" class="fw-bold mb-2 border-bottom pb-1 px-1 text-primary" style="font-size: 0.9rem;">
             <i class="bi bi-calendar-check me-1"></i> {{ date === '未定' ? '日程未定' : date }}
         </div>
-        
-        <div class="row g-3">
-            <div v-for="match in matches" :key="match.id" class="col-12">
-                <div class="card shadow-sm border-0 mb-2">
+
+        <div :class="isViewingMode ? 'viewing-grid' : 'row g-3'">
+            <div v-for="match in matches" 
+                 v-show="!isViewingMode || match.isLive" 
+                 :key="match.id" 
+                 :id="'match-' + match.id"
+                 :class="isViewingMode ? 'col-live' : 'col-12'">
+                 
+                <div class="card shadow-sm border-0 mb-2" :class="{'viewing-match-focus': isViewingMode && match.isLive}">
                     <div class="card-header d-flex justify-content-between align-items-center py-2 px-3" 
                          @click="toggleMatch(match.id)"
                          :class="match.isLive ? 'bg-primary text-white' : 'bg-light'"
@@ -230,13 +321,14 @@
                                 </div>
                             </div>
 
-                            <div v-if="game.pointHistory && ( (game.pointHistory[0] && game.pointHistory[0].length > 0) || (game.pointHistory[1] && game.pointHistory[1].length > 0) || (game.pointHistory[2] && game.pointHistory[2].length > 0) )" class="pb-2">
-    
-    <div class="mx-2 mb-1 p-1 bg-light border rounded text-center cursor-pointer shadow-sm" 
-         @click="toggleHistory(match.id + game.type)"
-         style="cursor: pointer; font-size: 0.75rem; color: #0d6efd; font-weight: bold;">
-        <i class="bi" :class="expandedHistories.includes(match.id + game.type) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-        {{ expandedHistories.includes(match.id + game.type) ? '▲ 点数推移を隠す' : '▼ 全ゲームの点数推移を表示' }}
+                            <div v-if="!isViewingMode && game.pointHistory && ( (game.pointHistory[0] && game.pointHistory[0].length > 0) || (game.pointHistory[1] && game.pointHistory[1].length > 0) || (game.pointHistory[2] && game.pointHistory[2].length > 0) )" class="pb-2">
+
+    <div class="mx-2 mb-1 p-2 bg-light border rounded text-center shadow-sm" 
+         @click="toggleHistory(match.id + game.type)" 
+         style="cursor: pointer; color: #0d6efd; line-height: 1;">
+        <i class="bi" 
+           :class="expandedHistories.includes(match.id + game.type) ? 'bi-chevron-up' : 'bi-chevron-down'"
+           style="font-size: 1.1rem;"></i>
     </div>
 
     <div v-show="expandedHistories.includes(match.id + game.type)" class="px-2">
@@ -274,7 +366,7 @@
             </div>
         </div>
     </div>
-</div></div></div> </div></div></div></div></div><script>
+</div></div></div> </div></div></div></div></div></div><script>
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmjsXL_PnAh0uIfLuQ6kEXNinHEWT_tGjYGGQdo63zgkAOvgJJK4Y2hhwC7sM8vZ58/exec";
 const firebaseConfig = {
     apiKey: "AIzaSyASxcZep_OpFzc2EML2sUMRuK8rDJXv-cg",
@@ -292,6 +384,7 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
+            // --- 既存データ ---
             allMatches: [], allRecords: [], expandedMatches: [], expandedHistories: [],
             currentTab: { gender: '1', division: 1 }, 
             tabList: [
@@ -300,77 +393,117 @@ createApp({
                 { id: '2m', name: '2部 男子', gender: '1', division: 2 },
                 { id: '2w', name: '2部 女子', gender: '2', division: 2 },
             ],
+            // --- 追加データ ---
+            isViewingMode: false,
+            viewIntervalSec: 10,     // 切り替え秒数
+            currentViewingIndex: 0,  // 現在何番目のLIVE試合か
+            viewingTimer: null,      // インターバルタイマー
+            viewingProgress: 0,      // プログレスバー用
+            progressTimer: null
         }
     },
+
     computed: {
-        universityRankings() {
-            const stats = {};
-            this.leagueUnivs.forEach(univ => {
-                stats[univ] = { name: univ, matchW: 0, matchL: 0, gameW: 0, gameL: 0, setW: 0, setL: 0 };
-            });
+    universityRankings() {
+        const stats = {};
+        this.leagueUnivs.forEach(univ => {
+            stats[univ] = { name: univ, matchW: 0, matchL: 0, gameW: 0, gameL: 0, setW: 0, setL: 0 };
+        });
 
-            this.filteredMatches.forEach(m => {
-                const s = this.getMatchScore(m);
-                const hName = (m.homeUniv || '').trim();
-                const aName = (m.awayUniv || '').trim();
-                if ((s.home + s.away > 0) && stats[hName] && stats[aName]) {
-                    stats[hName].gameW += s.home; stats[hName].gameL += s.away;
-                    stats[aName].gameW += s.away; stats[aName].gameL += s.home;
-                    if (s.home > s.away) { stats[hName].matchW++; stats[aName].matchL++; }
-                    else if (s.away > s.home) { stats[aName].matchW++; stats[hName].matchL++; }
-                    m.games.forEach(g => {
-                        const c = this.getIndividualGameCount(g, m.status);
-                        stats[hName].setW += c.home; stats[hName].setL += c.away;
-                        stats[aName].setW += c.away; stats[aName].setL += c.home;
-                    });
-                }
-            });
+        this.filteredMatches.forEach(m => {
+            const s = this.getMatchScore(m);
+            const hName = (m.homeUniv || '').trim();
+            const aName = (m.awayUniv || '').trim();
+            if ((s.home + s.away > 0) && stats[hName] && stats[aName]) {
+                stats[hName].gameW += s.home; stats[hName].gameL += s.away;
+                stats[aName].gameW += s.away; stats[aName].gameL += s.home;
+                if (s.home > s.away) { stats[hName].matchW++; stats[aName].matchL++; }
+                else if (s.away > s.home) { stats[aName].matchW++; stats[hName].matchL++; }
+                m.games.forEach(g => {
+                    const c = this.getIndividualGameCount(g, m.status);
+                    stats[hName].setW += c.home; stats[hName].setL += c.away;
+                    stats[aName].setW += c.away; stats[aName].setL += c.home;
+                });
+            }
+        });
 
-            return Object.values(stats).sort((a, b) => {
-                if (b.matchW !== a.matchW) return b.matchW - a.matchW;
-                if ((b.gameW - b.gameL) !== (a.gameW - a.gameL)) return (b.gameW - b.gameL) - (a.gameW - a.gameL);
-                return (b.setW - b.setL) - (a.setW - a.setL);
-            });
-        },
-        backNumberMap() {
-    const map = {};
-    this.allRecords.forEach(record => {
-        try {
-            const players = JSON.parse(record.player_reg);
-            const univ = record.univ_name.trim();
-            players.forEach(p => { 
-                if (p.name && p.back_number) {
-                    // ここで名前を整形して登録
-                    const normalizedName = this.formatName(p.name);
-                    map[`${univ}_${normalizedName}`] = p.back_number; 
-                }
-            });
-        } catch (e) {}
-    });
-    return map;
-},
-        filteredMatches() {
-            const label = this.currentTab.gender === '1' ? '男子' : '女子';
-            return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
-        },
-        leagueUnivs() {
-            const univMap = new Map();
-            this.filteredMatches.forEach(m => {
-                if (m.homeUniv && m.homeRank !== undefined) univMap.set(Number(m.homeRank), m.homeUniv.trim());
-                if (m.awayUniv && m.awayRank !== undefined) univMap.set(Number(m.awayRank), m.awayUniv.trim());
-            });
-            return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
-        },
-        groupedMatches() {
-            const groups = {};
-            this.filteredMatches.forEach(m => {
-                const date = m.matchDate || "未定";
-                if (!groups[date]) groups[date] = [];
-                groups[date].push(m);
-            });
-            return groups;
-        }
+        return Object.values(stats).sort((a, b) => {
+            if (b.matchW !== a.matchW) return b.matchW - a.matchW;
+            if ((b.gameW - b.gameL) !== (a.gameW - a.gameL)) return (b.gameW - b.gameL) - (a.gameW - a.gameL);
+            return (b.setW - b.setL) - (a.setW - a.setL);
+        });
     },
+    backNumberMap() {
+        const map = {};
+        this.allRecords.forEach(record => {
+            try {
+                const players = JSON.parse(record.player_reg);
+                const univ = record.univ_name.trim();
+                players.forEach(p => { 
+                    if (p.name && p.back_number) {
+                        const normalizedName = this.formatName(p.name);
+                        map[`${univ}_${normalizedName}`] = p.back_number; 
+                    }
+                });
+            } catch (e) {}
+        });
+        return map;
+    },
+    filteredMatches() {
+        const label = this.currentTab.gender === '1' ? '男子' : '女子';
+        return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
+    },
+    leagueUnivs() {
+        const univMap = new Map();
+        this.filteredMatches.forEach(m => {
+            if (m.homeUniv && m.homeRank !== undefined) univMap.set(Number(m.homeRank), m.homeUniv.trim());
+            if (m.awayUniv && m.awayRank !== undefined) univMap.set(Number(m.awayRank), m.awayUniv.trim());
+        });
+        return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
+    },
+    groupedMatches() {
+        const groups = {};
+        this.filteredMatches.forEach(m => {
+            const date = m.matchDate || "未定";
+            if (!groups[date]) groups[date] = [];
+            groups[date].push(m);
+        });
+        return groups;
+    },
+    // ★ 順番を指定したソート版のみを残します
+    liveMatchesOnly() {
+        const live = this.allMatches.filter(m => m.isLive);
+        return live.sort((a, b) => {
+            if (Number(a.division) !== Number(b.division)) {
+                return Number(a.division) - Number(b.division);
+            }
+            if (a.gender !== b.gender) {
+                return a.gender === '男子' ? -1 : 1;
+            }
+            return (a.sortOrder || 0) - (b.sortOrder || 0);
+        });
+    },
+
+activeLiveTabs() {
+        const tabs = [];
+        this.liveMatchesOnly.forEach(m => {
+            const genderValue = m.gender === '男子' ? '1' : '2';
+            const divisionValue = Number(m.division);
+            // すでにリストに登録済みかチェック
+            const exists = tabs.find(t => t.gender === genderValue && t.division === divisionValue);
+            if (!exists) {
+                tabs.push({ gender: genderValue, division: divisionValue });
+            }
+        });
+        return tabs;
+    },
+
+    currentTabName() {
+        const tab = this.tabList.find(t => t.gender === this.currentTab.gender && t.division === this.currentTab.division);
+        return tab ? tab.name : '';
+    }
+},
+
     async mounted() {
         try {
             const res = await fetch(GAS_API_URL);
@@ -388,6 +521,100 @@ createApp({
     },
     methods: {
         switchTab(g, d) { this.currentTab.gender = g; this.currentTab.division = d; },
+
+toggleViewingMode() {
+        if (this.isViewingMode) {
+            // チェック対象を activeLiveTabs に変更
+            if (this.activeLiveTabs.length === 0) {
+                alert("現在進行中のカテゴリーがありません。");
+                this.isViewingMode = false;
+                return;
+            }
+            this.startViewingCycle();
+        } else {
+            this.stopViewingCycle();
+        }
+    },
+
+        startViewingCycle() {
+        this.currentViewingIndex = 0; // ここでは「カテゴリーの番号」として使用
+        this.showCategoryMatches();  // 最初のカテゴリーを表示
+        
+        this.viewingProgress = 0;
+        const stepMs = 100;
+        this.viewingTimer = setInterval(() => {
+            this.viewingProgress += (stepMs / (this.viewIntervalSec * 1000)) * 100;
+            if (this.viewingProgress >= 100) {
+                this.viewingProgress = 0;
+                this.nextCategory();
+            }
+        }, stepMs);
+    },
+
+nextCategory() {
+        this.currentViewingIndex++;
+        if (this.currentViewingIndex >= this.activeLiveTabs.length) {
+            this.currentViewingIndex = 0;
+        }
+        this.showCategoryMatches();
+    },
+
+    showCategoryMatches() {
+            const tab = this.activeLiveTabs[this.currentViewingIndex];
+            if (!tab) return;
+
+            this.switchTab(tab.gender, tab.division);
+
+            this.$nextTick(() => {
+                this.allMatches.forEach(m => {
+                    if (m.isLive && !this.expandedMatches.includes(m.id)) {
+                        this.expandedMatches.push(m.id);
+                    }
+                });
+
+                // ★ バナーやタブが消えるので、単純にページ最上部へスクロール
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        },
+
+        stopViewingCycle() {
+            clearInterval(this.viewingTimer);
+            this.viewingTimer = null;
+            this.viewingProgress = 0;
+        },
+        nextLiveMatch() {
+            this.currentViewingIndex++;
+            if (this.currentViewingIndex >= this.liveMatchesOnly.length) {
+                this.currentViewingIndex = 0;
+            }
+            this.showCurrentLiveMatch();
+        },
+        showCurrentLiveMatch() {
+            const match = this.liveMatchesOnly[this.currentViewingIndex];
+            if (!match) return;
+
+            // 1. タブを切り替える
+            const gen = match.gender === '男子' ? '1' : '2';
+            const div = Number(match.division);
+            this.switchTab(gen, div);
+
+            // 2. アコーディオンを開く
+            setTimeout(() => {
+                if (!this.expandedMatches.includes(match.id)) {
+                    this.expandedMatches.push(match.id);
+                }
+                
+                // 3. スクロール
+                this.$nextTick(() => {
+                    const el = document.getElementById('match-' + match.id);
+                    if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }, 100);
+        },
+
+
         getMatchScore(m) {
             if (!m || !m.games) return { home: 0, away: 0 };
             let h = 0, a = 0;
