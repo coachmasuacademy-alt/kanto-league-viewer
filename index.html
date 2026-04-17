@@ -219,6 +219,62 @@
             margin-top: 2px !important;
             height: 2px !important; 
         }
+
+/* --- 大学ロゴ用デザイン --- */
+        .univ-logo {
+            height: 32px; /* 高さを20px → 32pxに拡大 */
+            max-width: 50px; /* 横長のロゴが崩れないよう制限 */
+            object-fit: contain; /* 比率を崩さずに枠に収める */
+            background-color: #ffffff; /* 青背景でも目立つように白を敷く */
+            border-radius: 4px; /* 少し角丸に */
+            padding: 3px; /* ロゴの周りに余白を持たせる */
+            margin-right: 8px; /* 大学名との隙間を広げる */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* 軽く影をつけて立体感を出す */
+        }
+        
+        /* 閲覧モード（自動巡回など）の時は邪魔にならないよう少し小さくする */
+        .viewing-mode-active .univ-logo {
+            height: 22px;
+            padding: 1px;
+            margin-right: 4px;
+        }
+
+/* --- カード全体用：巨大背景透かしロゴ --- */
+        .bg-watermark-card {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 95%;
+    width: auto;
+    max-width: 48%;
+    opacity: 0.18; /* 0.15よりさらに少しだけ濃く設定 */
+    z-index: 0;
+    pointer-events: none;
+    filter: grayscale(0%); /* カラーで表示 */
+}
+        .watermark-home {
+            left: -3%; 
+        }
+        .watermark-away {
+            right: -3%;
+        }
+
+.block-white {
+            background-color: rgba(255, 255, 255, 0.85); /* 濃さを0.85にアップして読みやすく */
+            border-radius: 6px;
+            margin: 0 4px;
+            height: 85%;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        /* 選手名がロゴに負けないよう、背景の白を少しだけ濃くします */
+        .game-row-container {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
     </style>
 </head>
 <body>
@@ -363,76 +419,91 @@
                          :class="match.isLive ? 'bg-primary text-white' : 'bg-light'"
                          style="cursor: pointer;">
                         <div class="small fw-bold">
-                            <span v-if="match.isLive" class="badge bg-danger me-1 animate-pulse">LIVE</span>
-                            <span v-else-if="match.status && match.status.toLowerCase() === 'finished'" class="badge bg-success me-1">終了</span>
-                            <span v-else class="badge bg-secondary me-1">予定</span>
-                            {{ match.homeUniv }} vs {{ match.awayUniv }}
-                            <i class="bi ms-1" :class="expandedMatches.includes(match.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-                        </div>
+    <span v-if="match.isLive" class="badge bg-danger me-1 animate-pulse">LIVE</span>
+    <span v-else-if="match.status && match.status.toLowerCase() === 'finished'" class="badge bg-success me-1">終了</span>
+    <span v-else class="badge bg-secondary me-1">予定</span>
+    
+    <span class="d-inline-flex align-items-center fs-6">
+        {{ match.homeUniv }}
+    </span>
+    <span class="mx-2 fw-normal opacity-75">vs</span>
+    <span class="d-inline-flex align-items-center fs-6">
+        {{ match.awayUniv }}
+    </span>
+    <i class="bi ms-1" :class="expandedMatches.includes(match.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+</div>
                         <div class="h5 m-0 fw-bold">
                             {{ getMatchScore(match).home }} - {{ getMatchScore(match).away }}
                         </div>
                     </div>
 
-                    <div class="card-body p-0" v-show="expandedMatches.includes(match.id)">
-                        <div v-for="game in match.games" :key="game.type" class="border-bottom bg-white">
-                            <div class="d-flex align-items-center py-2">
-                                <div class="game-type-box" style="width: 50px; text-align: center;">
-                                    <div class="game-type-label">{{ game.type }}</div>
-                                </div>
-                                
-                                <div class="player-area text-end pe-1" style="width: 30%;">
-    <div class="player-name">
-        {{ formatName(game.homeP1) || '---' }}
-        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)]">
-            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)] }}
-        </span>
-    </div>
-    <div v-if="game.homeP2" class="player-name">
-        {{ formatName(game.homeP2) }}
-        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)]">
-            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)] }}
-        </span>
-    </div>
-                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                                          class="badge rounded-pill bg-primary badge-score">
-                                        {{ getIndividualGameCount(game, match.status).home }}G
-                                    </span>
-                                </div>
 
-                                <div class="d-flex justify-content-center flex-grow-1">
-                                    <div v-for="n in 3" :key="n" 
-     class="score-unit border rounded text-center mx-1 px-1"
-     :class="{
-         'border-winner-home shadow-sm': game.scores && game.scores[n-1] && Number(game.scores[n-1].h) > Number(game.scores[n-1].a),
-         'border-winner-away shadow-sm': game.scores && game.scores[n-1] && Number(game.scores[n-1].a) > Number(game.scores[n-1].h)
-     }">
-                                        <div class="text-muted" style="font-size: 0.5rem;">{{ n }}G</div>
-                                        <div class="fw-bold" style="font-size: 0.85rem;">
-                                            {{ (game.scores && game.scores[n-1]) ? game.scores[n-1].h + '-' + game.scores[n-1].a : '0-0' }}
-                                        </div>
-                                    </div>
-                                </div>
+                   <div class="card-body p-0 position-relative overflow-hidden" v-show="expandedMatches.includes(match.id)">
+    
+    <img v-if="getUnivLogo(match.homeUniv)" :src="getUnivLogo(match.homeUniv)" class="bg-watermark-card watermark-home">
+    <img v-if="getUnivLogo(match.awayUniv)" :src="getUnivLogo(match.awayUniv)" class="bg-watermark-card watermark-away">
+    
+    <div class="position-relative" style="z-index: 1;">
+        
+       <div v-for="game in match.games" :key="game.type" class="border-bottom game-row-container">
+            
+            <div class="d-flex align-items-center py-2">
+                <div class="game-type-box" style="width: 50px; text-align: center;">
+                    <div class="game-type-label">{{ game.type }}</div>
+                </div>
+                
+                <div class="player-area text-end pe-1" style="width: 30%;">
+                    <div class="player-name">
+                        {{ formatName(game.homeP1) || '---' }}
+                        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)]">
+                            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)] }}
+                        </span>
+                    </div>
+                    <div v-if="game.homeP2" class="player-name">
+                        {{ formatName(game.homeP2) }}
+                        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)]">
+                            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)] }}
+                        </span>
+                    </div>
+                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                          class="badge rounded-pill bg-primary badge-score">
+                        {{ getIndividualGameCount(game, match.status).home }}G
+                    </span>
+                </div>
 
-                                <div class="player-area text-start ps-1" style="width: 30%;">
-    <div class="player-name">
-        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)]">
-            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)] }}
-        </span>
-        {{ formatName(game.awayP1) || '---' }}
-    </div>
-    <div v-if="game.awayP2" class="player-name">
-        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)]">
-            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)] }}
-        </span>
-        {{ formatName(game.awayP2) }}
-    </div>
-                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                                          class="badge rounded-pill bg-danger badge-score">
-                                        {{ getIndividualGameCount(game, match.status).away }}G
-                                    </span>
-                                </div>
-                            </div>
+                <div class="d-flex justify-content-center flex-grow-1">
+                    <div v-for="n in 3" :key="n" class="score-unit border rounded text-center mx-1 px-1 bg-white shadow-sm" 
+                         :class="{
+                            'border-winner-home': game.scores && game.scores[n-1] && Number(game.scores[n-1].h) > Number(game.scores[n-1].a),
+                            'border-winner-away': game.scores && game.scores[n-1] && Number(game.scores[n-1].a) > Number(game.scores[n-1].h)
+                         }">
+                        <div class="text-muted" style="font-size: 0.5rem;">{{ n }}G</div>
+                        <div class="fw-bold" style="font-size: 0.85rem;">
+                            {{ (game.scores && game.scores[n-1]) ? game.scores[n-1].h + '-' + game.scores[n-1].a : '0-0' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-area text-start ps-1" style="width: 30%;">
+                    <div class="player-name">
+                        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)]">
+                            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)] }}
+                        </span>
+                        {{ formatName(game.awayP1) || '---' }}
+                    </div>
+                    <div v-if="game.awayP2" class="player-name">
+                        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)]">
+                            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)] }}
+                        </span>
+                        {{ formatName(game.awayP2) }}
+                    </div>
+                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                          class="badge rounded-pill bg-danger badge-score">
+                        {{ getIndividualGameCount(game, match.status).away }}G
+                    </span>
+                </div>
+            </div>
+
 
                             <div v-if="!isViewingMode && game.pointHistory && ( (game.pointHistory[0] && game.pointHistory[0].length > 0) || (game.pointHistory[1] && game.pointHistory[1].length > 0) || (game.pointHistory[2] && game.pointHistory[2].length > 0) )" class="pb-2">
 
@@ -480,7 +551,7 @@
         </div>
     </div>
 </div></div></div> </div></div></div></div></div></div><script>
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzmjsXL_PnAh0uIfLuQ6kEXNinHEWT_tGjYGGQdo63zgkAOvgJJK4Y2hhwC7sM8vZ58/exec";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwBBQHjzSAXXNTD0nq2b1LgUtH8xhvyq8KCSCxb7lv3Z5Ze86IRMp2itRlQoa3-mHSPOQ/exec";
 const firebaseConfig = {
     apiKey: "AIzaSyASxcZep_OpFzc2EML2sUMRuK8rDJXv-cg",
     authDomain: "kanto-badminton-app.firebaseapp.com",
@@ -619,13 +690,17 @@ activeLiveTabs() {
 },
 
     async mounted() {
-        try {
-            const res = await fetch(GAS_API_URL);
+    try {
+            // GASの強力なキャッシュを回避するため、常に最新のタイムスタンプを付与して取得
+            const res = await fetch(GAS_API_URL + "?t=" + new Date().getTime());
             const data = await res.json();
             this.allRecords = data.records;
-        } catch (e) { console.error(e); }
+            console.log("【確認用】GASから取得した全データ:", this.allRecords); // ★この1行を追加してデータの中身を見ます
+        } catch (e) { 
+            console.error("【エラー】GASからのデータ取得に失敗:", e); // ★エラー時もわかりやすくします
+        }
 
-db.collection('settings').doc('venue').onSnapshot(doc => {
+        db.collection('settings').doc('venue').onSnapshot(doc => {
             if (doc.exists) {
                 this.venueYoutubeUrls = doc.data().youtubeUrls || ["", ""];
             }
@@ -803,6 +878,24 @@ nextCategory() {
                 return winner === 'a' ? currentA : '';
             });
         },
+
+getUnivLogo(univName) {
+    if (!univName || this.allRecords.length === 0) return '';
+    
+    // スペースを削除して比較しやすくする
+    const normalize = str => str ? String(str).replace(/[\s　]/g, '') : '';
+    const targetName = normalize(univName);
+    
+    // 【修正箇所】名前が一致し、"かつ" logo_urlに文字が入っているレコードを優先して探す！
+    const record = this.allRecords.find(r => 
+        r.univ_name && 
+        normalize(r.univ_name) === targetName && 
+        r.logo_url && 
+        r.logo_url.trim() !== ''
+    );
+    
+    return record ? record.logo_url : '';
+},
 
 formatName(name) {
             if (!name) return '';
