@@ -124,15 +124,111 @@
 #viewing-header {
     scroll-margin-top: 20px; /* スクロールした時に上に20pxの隙間を作る */
 }
+
+/* 1. Bootstrapの比率指定を完全に破壊し、動画の高さを強制固定 */
+        .viewing-mode-active .youtube-compact {
+            max-width: 100% !important;
+            margin-bottom: 2px !important;
+        }
+        .viewing-mode-active .youtube-compact .row {
+            justify-content: center !important; 
+        }
+        .viewing-mode-active .youtube-compact [class*="col-"] {
+            width: auto !important;
+            flex: 0 0 auto !important;
+            padding: 0 5px !important;
+        }
+        /* Bootstrapの仕様（--bs-aspect-ratio）を 0 にして高さを強制ロック */
+        .viewing-mode-active .youtube-compact .ratio {
+            --bs-aspect-ratio: 0% !important; 
+            padding-top: 0 !important;        
+            height: 15vh !important; 
+            min-height: 15vh !important;
+            max-height: 15vh !important;
+            width: calc(15vh * 16 / 9) !important;
+            max-width: 95vw !important;
+            margin: 0 auto;
+        }
+        .viewing-mode-active .youtube-compact .ratio::before {
+            display: none !important; 
+        }
+        .viewing-mode-active .youtube-compact .ratio iframe {
+            position: static !important;
+            height: 100% !important;
+            width: 100% !important;
+        }
+
+        /* 2. 見出しの余白をさらに削減 */
+        .viewing-mode-active #viewing-header {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 0.95rem !important;
+        }
+
+        /* 3. 試合カード内の各行（1S, 2S...）の余白を強制ゼロに */
+        .viewing-mode-active .card {
+            margin-bottom: 2px !important;
+        }
+        .viewing-mode-active .card-header {
+            padding: 2px 4px !important;
+        }
+        .viewing-mode-active .card-header .h5 {
+            font-size: 0.9rem !important;
+        }
+        
+        /* 各試合の行の高さを限界まで潰す */
+        .viewing-mode-active .card-body .d-flex {
+            padding-top: 1px !important;    
+            padding-bottom: 1px !important; 
+            min-height: 28px !important;
+        }
+        
+        .viewing-mode-active .game-type-label {
+            font-size: 0.85rem !important;
+        }
+        .viewing-mode-active .player-name {
+            font-size: 0.7rem !important;
+            line-height: 1 !important;
+            margin-bottom: 1px;
+        }
+        
+        /* 4. スコアボックスの極小化 */
+        .viewing-mode-active .score-unit {
+            padding: 0 1px !important;
+            margin: 0 1px !important;
+            height: auto !important;
+            border: 1px solid #eee !important;
+        }
+        .viewing-mode-active .score-unit .text-muted {
+            font-size: 0.4rem !important;
+            margin-bottom: -5px;
+            transform: scale(0.9);
+        }
+        .viewing-mode-active .score-unit .fw-bold {
+            font-size: 0.7rem !important;
+            line-height: 1.1;
+        }
+
+        /* 5. コントロールバー（自動巡回中）を細くする */
+        .viewing-mode-active .viewer-controls {
+            padding: 2px 10px !important;
+            margin-bottom: 2px !important;
+            min-height: auto !important;
+        }
+        .viewing-mode-active .progress-bar-container {
+            margin-top: 2px !important;
+            height: 2px !important; 
+        }
     </style>
 </head>
 <body>
-<div id="app" class="container-fluid py-2 px-1" v-cloak>
+<div id="app" class="container-fluid py-2 px-1" :class="{'viewing-mode-active': isViewingMode}" v-cloak>
 
     <div class="header-banner shadow-sm rounded mb-3 text-center py-4" v-if="!isViewingMode">
         <h3 class="fw-bold m-0 text-white"><i class="bi bi-broadcast text-warning me-2"></i> ライブ速報・リーグ対戦表</h3>
         <p class="mb-0 mt-2 small opacity-75">関東学生バドミントン連盟 公式速報</p>
     </div>
+
 
 <div id="scroll-target" class="viewer-controls shadow-sm" :class="{'viewing-active': isViewingMode}">
     <div class="d-flex align-items-center">
@@ -150,17 +246,34 @@
     
     <div class="flex-grow-1 small" v-if="isViewingMode">
         <span v-if="activeLiveTabs.length > 0">
-    <span class="badge bg-danger me-2">自動巡回中</span>
-    {{ currentViewingIndex + 1 }} / {{ activeLiveTabs.length }} カテゴリー目 を表示中
-</span>
+            <span class="badge bg-danger me-2">自動巡回中</span>
+            {{ currentViewingIndex + 1 }} / {{ activeLiveTabs.length }} カテゴリー目 を表示中
+        </span>
         <span v-else class="text-danger">現在、進行中の試合はありません</span>
         <div class="progress-bar-container">
             <div class="progress-bar-fill" :style="{ width: viewingProgress + '%' }"></div>
         </div>
     </div>
+</div> <div id="video-area" v-if="venueYoutubeUrls.some(url => extractYouTubeId(url))" class="px-1" :class="isViewingMode ? 'mb-2 youtube-compact' : 'mb-4'">
+    <div class="row g-2 justify-content-center">
+        <template v-for="(url, idx) in venueYoutubeUrls" :key="'viewer-'+idx">
+            <div v-if="extractYouTubeId(url)" class="col-12 col-md-6">
+                <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden border border-2 border-dark bg-dark">
+                    <iframe 
+                        :src="`https://www.youtube.com/embed/${extractYouTubeId(url)}`" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </template>
+    </div>
 </div>
+<div class="nav nav-pills nav-fill bg-white p-1 rounded shadow-sm border mb-4" v-if="!isViewingMode">
 
-    <div class="nav nav-pills nav-fill bg-white p-1 rounded shadow-sm border mb-4" v-if="!isViewingMode">
+
         <button v-for="tab in tabList" :key="tab.id" class="nav-link py-2" 
                 :class="{ active: currentTab.gender === tab.gender && currentTab.division === tab.division }"
                 @click="switchTab(tab.gender, tab.division)" style="font-size: 0.85rem;">
@@ -399,7 +512,8 @@ createApp({
             currentViewingIndex: 0,  // 現在何番目のLIVE試合か
             viewingTimer: null,      // インターバルタイマー
             viewingProgress: 0,      // プログレスバー用
-            progressTimer: null
+            progressTimer: null,
+venueYoutubeUrls: ["", ""]
         }
     },
 
@@ -511,6 +625,12 @@ activeLiveTabs() {
             this.allRecords = data.records;
         } catch (e) { console.error(e); }
 
+db.collection('settings').doc('venue').onSnapshot(doc => {
+            if (doc.exists) {
+                this.venueYoutubeUrls = doc.data().youtubeUrls || ["", ""];
+            }
+        });
+
         db.collection('matches').orderBy('sortOrder', 'asc').onSnapshot(qs => {
             const matches = qs.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             this.allMatches = matches;
@@ -572,8 +692,14 @@ nextCategory() {
                     }
                 });
 
-                // ★ バナーやタブが消えるので、単純にページ最上部へスクロール
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // ▼▼▼ ここから修正：映像エリアのトップに合わせる ▼▼▼
+                const videoArea = document.getElementById('video-area');
+                if (videoArea && this.isViewingMode) {
+                    videoArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                // ▲▲▲ 修正ここまで ▲▲▲
             });
         },
 
@@ -684,7 +810,22 @@ formatName(name) {
                 .replace(/　/g, ' ')   // 全角スペースを半角に変換
                 .replace(/\s+/g, ' ')  // 連続するスペースを1つに統合
                 .trim();               // 前後の余白を削除
+            },
+
+extractYouTubeId(url) {
+            if (!url) return null;
+            // 通常の動画、短縮URL、ライブ配信(/live/)など、あらゆる形式に対応する正規表現
+            const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|live\/))([^#\&\?]{11})/;
+            const match = url.match(regExp);
+            
+            if (match && match[1].length === 11) {
+                return match[1]; // URLから抽出成功
+            } else if (url.trim().length === 11) {
+                return url.trim(); // 11桁のIDが直接入力された場合
             }
+            
+            return null; // 無効なURLの場合は null を返す（iframeを表示させない）
+        }
     }
 }).mount('#app');
 </script>
