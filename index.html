@@ -23,23 +23,27 @@
         .back-number { display: inline-block; background-color: #f0f0f0; padding: 1px 5px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: #007bff; margin-right: 4px; }
         .game-type-label { font-size: 1.2rem !important; font-weight: 900 !important; color: #0d6efd; }
         
+        /* チーム情報リンク */
+        .team-info-link { cursor: pointer; text-decoration: underline; text-decoration-color: rgba(0,0,0,0.3); text-underline-offset: 3px; transition: opacity 0.2s; }
+        .team-info-link:hover { opacity: 0.7; color: #0d6efd !important; text-decoration-color: #0d6efd; }
+
         /* スコア推移表（コンパクト版） */
         .point-history-container { overflow-x: auto; background: #fff; border: 1px solid #dee2e6; margin-top: 5px; margin-bottom: 10px; }
         .history-table { border-collapse: collapse; font-size: 0.75rem; table-layout: fixed; }
         .history-table td { width: 22px; height: 26px; text-align: center; border: 1px solid #eee; padding: 0; vertical-align: middle; }
         .history-label { 
-    width: 90px !important; /* 幅を少し広げる */
-    background: #f8f9fa; 
-    font-weight: bold; 
-    position: sticky; 
-    left: 0; 
-    z-index: 1; 
-    border-right: 2px solid #ddd !important;
-    font-size: 0.65rem; /* 名前が長い場合に備えて少し小さくする */
-    white-space: nowrap; /* 折り返さない */
-    overflow: hidden;
-    text-overflow: ellipsis; /* 溢れた場合は「...」にする */
-}
+            width: 90px !important; 
+            background: #f8f9fa; 
+            font-weight: bold; 
+            position: sticky; 
+            left: 0; 
+            z-index: 1; 
+            border-right: 2px solid #ddd !important;
+            font-size: 0.65rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .role-cell { width: 25px !important; background: #fff; font-weight: bold; }
         .last-point { background-color: #e7f1ff; color: #0d6efd; font-weight: bold; }
 
@@ -47,24 +51,23 @@
         .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
 
-.border-winner-home { 
-    border-width: 2px !important; 
-    border-color: #add8e6 !important; /* 淡い青（ライトブルー） */
-    background-color: #f0f8ff !important; /* ほんのり青背景 */
-}
-.border-winner-away { 
-    border-width: 2px !important; 
-    border-color: #ffb6c1 !important; /* 淡い赤（ライトピンク） */
-    background-color: #fff5f5 !important; /* ほんのり赤背景 */
-}
+        .border-winner-home { 
+            border-width: 2px !important; 
+            border-color: #add8e6 !important;
+            background-color: #f0f8ff !important;
+        }
+        .border-winner-away { 
+            border-width: 2px !important; 
+            border-color: #ffb6c1 !important;
+            background-color: #fff5f5 !important;
+        }
 
-.score-unit { transition: all 0.2s ease; } 
+        .score-unit { transition: all 0.2s ease; } 
 
-/* 負けた方や未入力の枠（より薄く） */
-.score-unit:not(.border-winner-home):not(.border-winner-away) {
-    border-color: #ebebeb !important;
-    opacity: 0.5;
-}
+        .score-unit:not(.border-winner-home):not(.border-winner-away) {
+            border-color: #ebebeb !important;
+            opacity: 0.5;
+        }
         @media (max-width: 768px) {
             .player-name { font-size: 1.0rem !important; }
             .game-type-box { width: 45px !important; min-width: 45px !important; border-right: 1px solid #eee; display: flex; align-items: center; justify-content: center; }
@@ -72,7 +75,7 @@
             .score-unit { min-width: 40px !important; }
         }
 
-.viewer-controls {
+        .viewer-controls {
             background: #fff;
             border: 2px solid #0d6efd;
             border-radius: 10px;
@@ -86,6 +89,10 @@
         .viewing-active {
             border-color: #dc3545;
             background-color: #fff5f5;
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
         }
         .progress-bar-container {
             height: 4px;
@@ -105,27 +112,24 @@
             outline-offset: -2px;
         }
 
-/* 閲覧モード中、ライブ試合をカード形式で並べる設定 */
-.viewing-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.viewing-grid .col-live {
-    flex: 1 1 300px; /* 最低300px幅で、空きがあれば広がる */
-    max-width: 100%;
-}
+        .viewing-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .viewing-grid .col-live {
+            flex: 1 1 300px;
+            max-width: 100%;
+        }
 
-/* 閲覧モード中は詳細（点数推移など）を少しコンパクトにする */
-.viewing-active .card-body {
-    font-size: 0.9rem;
-}
+        .viewing-active .card-body {
+            font-size: 0.9rem;
+        }
 
-#viewing-header {
-    scroll-margin-top: 20px; /* スクロールした時に上に20pxの隙間を作る */
-}
+        #viewing-header {
+            scroll-margin-top: 20px;
+        }
 
-/* 1. Bootstrapの比率指定を完全に破壊し、動画の高さを強制固定 */
         .viewing-mode-active .youtube-compact {
             max-width: 100% !important;
             margin-bottom: 2px !important;
@@ -138,7 +142,6 @@
             flex: 0 0 auto !important;
             padding: 0 5px !important;
         }
-        /* Bootstrapの仕様（--bs-aspect-ratio）を 0 にして高さを強制ロック */
         .viewing-mode-active .youtube-compact .ratio {
             --bs-aspect-ratio: 0% !important; 
             padding-top: 0 !important;        
@@ -158,14 +161,12 @@
             width: 100% !important;
         }
 
-        /* 2. 見出しの余白をさらに削減 */
         .viewing-mode-active #viewing-header {
             margin: 0 !important;
             padding: 0 !important;
             font-size: 0.95rem !important;
         }
 
-        /* 3. 試合カード内の各行（1S, 2S...）の余白を強制ゼロに */
         .viewing-mode-active .card {
             margin-bottom: 2px !important;
         }
@@ -176,7 +177,6 @@
             font-size: 0.9rem !important;
         }
         
-        /* 各試合の行の高さを限界まで潰す */
         .viewing-mode-active .card-body .d-flex {
             padding-top: 1px !important;    
             padding-bottom: 1px !important; 
@@ -192,7 +192,6 @@
             margin-bottom: 1px;
         }
         
-        /* 4. スコアボックスの極小化 */
         .viewing-mode-active .score-unit {
             padding: 0 1px !important;
             margin: 0 1px !important;
@@ -209,7 +208,6 @@
             line-height: 1.1;
         }
 
-        /* 5. コントロールバー（自動巡回中）を細くする */
         .viewing-mode-active .viewer-controls {
             padding: 2px 10px !important;
             margin-bottom: 2px !important;
@@ -220,47 +218,40 @@
             height: 2px !important; 
         }
 
-/* --- 大学ロゴ用デザイン --- */
         .univ-logo {
-            height: 32px; /* 高さを20px → 32pxに拡大 */
-            max-width: 50px; /* 横長のロゴが崩れないよう制限 */
-            object-fit: contain; /* 比率を崩さずに枠に収める */
-            background-color: #ffffff; /* 青背景でも目立つように白を敷く */
-            border-radius: 4px; /* 少し角丸に */
-            padding: 3px; /* ロゴの周りに余白を持たせる */
-            margin-right: 8px; /* 大学名との隙間を広げる */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* 軽く影をつけて立体感を出す */
+            height: 32px;
+            max-width: 50px;
+            object-fit: contain;
+            background-color: #ffffff;
+            border-radius: 4px;
+            padding: 3px;
+            margin-right: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         
-        /* 閲覧モード（自動巡回など）の時は邪魔にならないよう少し小さくする */
         .viewing-mode-active .univ-logo {
             height: 22px;
             padding: 1px;
             margin-right: 4px;
         }
 
-/* --- カード全体用：巨大背景透かしロゴ --- */
         .bg-watermark-card {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 95%;
-    width: auto;
-    max-width: 48%;
-    opacity: 0.18; /* 0.15よりさらに少しだけ濃く設定 */
-    z-index: 0;
-    pointer-events: none;
-    filter: grayscale(0%); /* カラーで表示 */
-}
-        .watermark-home {
-            left: -3%; 
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 95%;
+            width: auto;
+            max-width: 48%;
+            opacity: 0.18;
+            z-index: 0;
+            pointer-events: none;
+            filter: grayscale(0%);
         }
-        .watermark-away {
-            right: -3%;
-        }
+        .watermark-home { left: -3%;  }
+        .watermark-away { right: -3%; }
 
-.block-white {
-            background-color: rgba(255, 255, 255, 0.85); /* 濃さを0.85にアップして読みやすく */
+        .block-white {
+            background-color: rgba(255, 255, 255, 0.85);
             border-radius: 6px;
             margin: 0 4px;
             height: 85%;
@@ -270,75 +261,184 @@
             z-index: 2;
         }
 
-        /* 選手名がロゴに負けないよう、背景の白を少しだけ濃くします */
         .game-row-container {
-    background-color: rgba(255, 255, 255, 0.6) !important;
-}
+            background-color: rgba(255, 255, 255, 0.6) !important;
+        }
 
+.player-info-table-container {
+            max-height: 40vh; /* モーダル内に収まる高さに制限 */
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+        .player-info-table-container thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 0 0 #212529; /* スクロール時に枠線が消えないようにする */
+        }
     </style>
 </head>
 <body>
 <div id="app" class="container-fluid py-2 px-1" :class="{'viewing-mode-active': isViewingMode}" v-cloak>
 
+    <div v-if="teamModal.show" class="modal fade show d-block" style="background: rgba(0,0,0,0.5); z-index: 1055;" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white py-3 align-items-center">
+                    <h4 class="modal-title fw-bold m-0 d-flex align-items-center">
+                        <img v-if="getUnivLogo(teamModal.univName)" :src="getUnivLogo(teamModal.univName)" class="bg-white rounded p-1 shadow me-3" style="height: 60px; width: auto; max-width: 100px; object-fit: contain;">
+                        <i v-else class="bi bi-info-circle me-2"></i> 
+                        {{ teamModal.univName }} チーム情報
+                    </h4>
+                    <button type="button" class="btn-close btn-close-white" @click="teamModal.show = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h6 class="fw-bold border-bottom border-primary pb-2 mb-3 text-primary"><i class="bi bi-person-badge"></i> 役員・スタッフ</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted mb-1">部長</div>
+                            <div class="fw-bold">{{ teamModal.president }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted mb-1">監督</div>
+                            <div class="fw-bold">{{ teamModal.manager }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted mb-1">コーチ</div>
+                            <div class="fw-bold">{{ teamModal.coach1 }}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted mb-1">コーチ</div>
+                            <div class="fw-bold">{{ teamModal.coach2 }}</div>
+                        </div>
+                    </div>
+
+                    <h6 class="fw-bold border-bottom border-primary pb-2 mb-3 text-primary"><i class="bi bi-people"></i> 登録選手</h6>
+                    <div class="table-responsive player-info-table-container border rounded mb-2">
+                        <table class="table table-sm table-bordered table-striped text-nowrap align-middle mb-0" style="font-size:0.85rem;">
+                            <thead class="table-dark">
+                                <tr class="text-center">
+                                    <th>背番号</th>
+                                    <th>氏名</th>
+                                    <th>学年</th>
+                                    <th>出身県</th>
+                                    <th>ジュニア</th>
+                                    <th>中学校</th>
+                                    <th>高校</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="p in teamModal.players" :key="p.name">
+                                    <td class="text-center">{{ p.back_number || '-' }}</td>
+                                    <td class="fw-bold">{{ p.name }} <br><span class="text-muted small" style="font-size:0.65rem;">{{ p.kana }}</span></td>
+                                    <td class="text-center">{{ p.grade ? p.grade + '年' : '-' }}</td>
+                                    <td class="text-center">{{ p.pref || '-' }}</td>
+                                    <td>{{ p.junior || '-' }}</td>
+                                    <td>{{ p.jhs || '-' }}</td>
+                                    <td>{{ p.hs || '-' }}</td>
+                                </tr>
+                                <tr v-if="teamModal.players.length === 0">
+                                    <td colspan="7" class="text-center text-muted py-3">選手データが登録されていません</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer py-1 border-0">
+                    <button type="button" class="btn btn-secondary" @click="teamModal.show = false">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="header-banner shadow-sm rounded mb-3 text-center py-4" v-if="!isViewingMode">
         <h3 class="fw-bold m-0 text-white"><i class="bi bi-broadcast text-warning me-2"></i> ライブ速報・リーグ対戦表</h3>
         <p class="mb-0 mt-2 small opacity-75">関東学生バドミントン連盟 公式速報</p>
     </div>
 
-
-<div id="scroll-target" class="viewer-controls shadow-sm" :class="{'viewing-active': isViewingMode}">
-    <div class="d-flex align-items-center">
-        <div class="form-check form-switch me-3">
-            <input class="form-check-input" type="checkbox" id="viewModeSwitch" v-model="isViewingMode" @change="toggleViewingMode">
-            <label class="form-check-label fw-bold" for="viewModeSwitch">
-                <i class="bi bi-play-circle-fill me-1"></i>閲覧モード
-            </label>
-        </div>
-        <div class="d-flex align-items-center">
-            <span class="small text-muted me-2">切替(秒):</span>
-            <input type="number" class="form-control form-control-sm" v-model.number="viewIntervalSec" style="width: 60px;">
-        </div>
-    </div>
-    
-    <div class="flex-grow-1 small" v-if="isViewingMode">
-        <span v-if="activeLiveTabs.length > 0">
-            <span class="badge bg-danger me-2">自動巡回中</span>
-            {{ currentViewingIndex + 1 }} / {{ activeLiveTabs.length }} カテゴリー目 を表示中
-        </span>
-        <span v-else class="text-danger">現在、進行中の試合はありません</span>
-        <div class="progress-bar-container">
-            <div class="progress-bar-fill" :style="{ width: viewingProgress + '%' }"></div>
-        </div>
-    </div>
-</div> <div id="video-area" v-if="venueYoutubeUrls.some(url => extractYouTubeId(url))" class="px-1" :class="isViewingMode ? 'mb-2 youtube-compact' : 'mb-4'">
-    <div class="row g-2 justify-content-center">
-        <template v-for="(url, idx) in venueYoutubeUrls" :key="'viewer-'+idx">
-            <div v-if="extractYouTubeId(url)" class="col-12 col-md-6">
-                <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden border border-2 border-dark bg-dark">
-                    <iframe 
-                        :src="`https://www.youtube.com/embed/${extractYouTubeId(url)}`" 
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
+    <div id="scroll-target" class="viewer-controls shadow-sm" :class="{'viewing-active': isViewingMode}">
+    <div class="d-flex align-items-center flex-wrap w-100">
+        <div class="d-flex align-items-center me-3 mb-2 mb-md-0">
+            <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="viewModeSwitch" v-model="isViewingMode" @change="toggleViewingMode">
+                <label class="form-check-label fw-bold" for="viewModeSwitch">
+                    <i class="bi bi-play-circle-fill me-1"></i>閲覧モード
+                </label>
             </div>
-        </template>
-    </div>
-</div>
-<div class="nav nav-pills nav-fill bg-white p-1 rounded shadow-sm border mb-4" v-if="!isViewingMode">
-
-
-        <button v-for="tab in tabList" :key="tab.id" class="nav-link py-2" 
-                :class="{ active: currentTab.gender === tab.gender && currentTab.division === tab.division }"
-                @click="switchTab(tab.gender, tab.division)" style="font-size: 0.85rem;">
-            {{ tab.name }}
+            <div class="d-flex align-items-center">
+                <span class="small text-muted me-2">切替(秒):</span>
+                <input type="number" class="form-control form-control-sm" v-model.number="viewIntervalSec" style="width: 60px;">
+            </div>
+        </div>
+        
+        <button class="btn btn-sm ms-auto mb-2 mb-md-0" :class="showViewingSettings ? 'btn-primary' : 'btn-outline-primary'" @click="showViewingSettings = !showViewingSettings">
+            <i class="bi bi-funnel-fill"></i> 巡回カテゴリ設定
         </button>
     </div>
 
+    <div v-if="showViewingSettings" class="w-100 p-2 mt-2 bg-white border border-primary rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+            <span class="small fw-bold text-primary"><i class="bi bi-check2-square"></i> 自動巡回するカテゴリを選択</span>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary py-0 me-1" style="font-size: 0.75rem;" @click="selectAllTabs">全て</button>
+                <button class="btn btn-sm btn-outline-danger py-0" style="font-size: 0.75rem;" @click="clearAllTabs">クリア</button>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <div class="form-check form-check-inline m-0" v-for="tab in tabList" :key="'set-'+tab.id">
+                <input class="form-check-input" type="checkbox" :id="'chk-'+tab.id" :value="tab.id" v-model="selectedViewingTabs" @change="updateViewingCycleIfNeeded">
+                <label class="form-check-label small" :for="'chk-'+tab.id">{{ tab.name }}</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex-grow-1 mt-2 w-100" v-if="isViewingMode">
+        <div v-if="filteredLiveTabs.length > 0" class="d-flex align-items-center flex-wrap">
+            <span class="badge bg-danger me-2 animate-pulse">自動巡回中</span>
+            <span class="fw-bold text-danger me-3" style="font-size: 1.2rem; letter-spacing: 0.05rem;">
+                【 {{ currentTabName }} 】
+            </span>
+            <span class="small text-muted fw-bold">{{ currentViewingIndex + 1 }} / {{ filteredLiveTabs.length }}</span>
+        </div>
+        <span v-else class="text-danger small fw-bold">現在、指定されたカテゴリで進行中の試合はありません</span>
+        <div class="progress-bar-container" v-if="filteredLiveTabs.length > 0">
+            <div class="progress-bar-fill" :style="{ width: viewingProgress + '%' }"></div>
+        </div>
+    </div>
+</div>
+
+    <div id="video-area" v-if="venueYoutubeUrls.some(url => extractYouTubeId(url))" class="px-1" :class="isViewingMode ? 'mb-2 youtube-compact' : 'mb-4'">
+        <div class="row g-2 justify-content-center">
+            <template v-for="(url, idx) in venueYoutubeUrls" :key="'viewer-'+idx">
+                <div v-if="extractYouTubeId(url)" class="col-12 col-md-6">
+                    <div class="ratio ratio-16x9 shadow-sm rounded overflow-hidden border border-2 border-dark bg-dark">
+                        <iframe 
+                            :src="`https://www.youtube.com/embed/${extractYouTubeId(url)}`" 
+                            title="YouTube video player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <div class="mb-4 bg-white p-2 p-md-3 rounded shadow-sm border d-flex align-items-center gap-2 gap-md-3" v-if="!isViewingMode">
+        <label class="form-label fw-bold mb-0 text-nowrap small md-normal"><i class="bi bi-display text-primary"></i> 試合表示:</label>
+        <select class="form-select form-select-lg fw-bold border-primary shadow-sm"
+                @change="switchTab(tabList[$event.target.value].gender, tabList[$event.target.value].division)">
+            <option v-for="(tab, index) in tabList" 
+                    :key="tab.id" 
+                    :value="index" 
+                    :selected="currentTab.gender === tab.gender && currentTab.division === tab.division">
+                {{ tab.name }}
+            </option>
+        </select>
+    </div>
+
     <div class="mb-5 px-1" v-if="!isViewingMode">
-        <div class="row g-3">
+        <div class="row g-3" v-if="currentTab.division !== '入替戦・順位決定戦'">
             <div class="col-lg-8">
                 <h6 class="fw-bold mb-3"><i class="bi bi-grid-3x3"></i> リーグ戦星取表</h6>
                 <div class="table-responsive shadow-sm">
@@ -351,7 +451,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="(rowUniv, rIdx) in leagueUnivs" :key="rIdx">
-                                <td class="table-primary-light">{{ rowUniv }}</td>
+                                <td class="table-primary-light team-info-link text-primary" @click="openTeamInfo(rowUniv)">{{ rowUniv }}</td>
                                 <td v-for="(colUniv, cIdx) in leagueUnivs" :key="cIdx" :class="{'cell-self': rIdx === cIdx}">
                                     <div v-if="rIdx !== cIdx" v-html="getMatchResult(rowUniv, colUniv)"></div>
                                 </td>
@@ -361,7 +461,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-4">
+           <div class="col-lg-4">
                 <h6 class="fw-bold mb-3"><i class="bi bi-trophy"></i> 現在の順位</h6>
                 <div class="bg-white rounded shadow-sm border overflow-hidden">
                     <table class="table table-sm m-0 text-center" style="font-size: 0.85rem;">
@@ -419,19 +519,21 @@
                          :class="match.isLive ? 'bg-primary text-white' : 'bg-light'"
                          style="cursor: pointer;">
                         <div class="small fw-bold">
-    <span v-if="match.isLive" class="badge bg-danger me-1 animate-pulse">LIVE</span>
-    <span v-else-if="match.status && match.status.toLowerCase() === 'finished'" class="badge bg-success me-1">終了</span>
-    <span v-else class="badge bg-secondary me-1">予定</span>
-    
-    <span class="d-inline-flex align-items-center fs-6">
-        {{ match.homeUniv }}
-    </span>
-    <span class="mx-2 fw-normal opacity-75">vs</span>
-    <span class="d-inline-flex align-items-center fs-6">
-        {{ match.awayUniv }}
-    </span>
-    <i class="bi ms-1" :class="expandedMatches.includes(match.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-</div>
+                            <span v-if="match.isLive" class="badge bg-danger me-1 animate-pulse">LIVE</span>
+                            <span v-else-if="match.status && match.status.toLowerCase() === 'finished'" class="badge bg-success me-1">終了</span>
+                            <span v-else class="badge bg-secondary me-1">予定</span>
+                            
+                            <span class="ms-1 me-2">{{ match.matchTitle || ('第 ' + (match.sortOrder + 1) + ' 試合') }}</span>
+                            
+                            <span class="d-inline-flex align-items-center fs-6 team-info-link" @click.stop="openTeamInfo(match.homeUniv)" title="チーム情報を確認" :style="match.isLive ? 'color: white !important;' : ''">
+                                {{ match.homeUniv }}
+                            </span>
+                            <span class="mx-2 fw-normal opacity-75">vs</span>
+                            <span class="d-inline-flex align-items-center fs-6 team-info-link" @click.stop="openTeamInfo(match.awayUniv)" title="チーム情報を確認" :style="match.isLive ? 'color: white !important;' : ''">
+                                {{ match.awayUniv }}
+                            </span>
+                            <i class="bi ms-1" :class="expandedMatches.includes(match.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
                         <div class="h5 m-0 fw-bold">
                             {{ getMatchScore(match).home }} - {{ getMatchScore(match).away }}
                         </div>
@@ -440,117 +542,126 @@
 
                    <div class="card-body p-0 position-relative overflow-hidden" v-show="expandedMatches.includes(match.id)">
     
-    <img v-if="getUnivLogo(match.homeUniv)" :src="getUnivLogo(match.homeUniv)" class="bg-watermark-card watermark-home">
-    <img v-if="getUnivLogo(match.awayUniv)" :src="getUnivLogo(match.awayUniv)" class="bg-watermark-card watermark-away">
-    
-    <div class="position-relative" style="z-index: 1;">
-        
-       <div v-for="game in match.games" :key="game.type" class="border-bottom game-row-container">
-            
-            <div class="d-flex align-items-center py-2">
-                <div class="game-type-box" style="width: 50px; text-align: center;">
-                    <div class="game-type-label">{{ game.type }}</div>
-                </div>
-                
-                <div class="player-area text-end pe-1" style="width: 30%;">
-                    <div class="player-name">
-                        {{ formatName(game.homeP1) || '---' }}
-                        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)]">
-                            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)] }}
-                        </span>
-                    </div>
-                    <div v-if="game.homeP2" class="player-name">
-                        {{ formatName(game.homeP2) }}
-                        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)]">
-                            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)] }}
-                        </span>
-                    </div>
-                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                          class="badge rounded-pill bg-primary badge-score">
-                        {{ getIndividualGameCount(game, match.status).home }}G
-                    </span>
-                </div>
+                    <img v-if="getUnivLogo(match.homeUniv)" :src="getUnivLogo(match.homeUniv)" class="bg-watermark-card watermark-home">
+                    <img v-if="getUnivLogo(match.awayUniv)" :src="getUnivLogo(match.awayUniv)" class="bg-watermark-card watermark-away">
+                    
+                    <div class="position-relative" style="z-index: 1;">
+                        
+                       <div v-for="game in match.games" :key="game.type" class="border-bottom game-row-container">
+                            
+                            <div class="d-flex align-items-center py-2">
+                                <div class="game-type-box" style="width: 50px; text-align: center;">
+                                    <div class="game-type-label">{{ game.type }}</div>
+                                </div>
+                                
+                                <div class="player-area text-end pe-1" style="width: 30%;">
+                                    <div class="player-name">
+                                        {{ formatName(game.homeP1) || '---' }}
+                                        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)]">
+                                            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP1)] }}
+                                        </span>
+                                    </div>
+                                    <div v-if="game.homeP2" class="player-name">
+                                        {{ formatName(game.homeP2) }}
+                                        <span class="back-number" v-if="backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)]">
+                                            {{ backNumberMap[formatName(match.homeUniv) + '_' + formatName(game.homeP2)] }}
+                                        </span>
+                                    </div>
+                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                          class="badge rounded-pill bg-primary badge-score">
+                                        {{ getIndividualGameCount(game, match.status).home }}G
+                                    </span>
+                                </div>
 
-                <div class="d-flex justify-content-center flex-grow-1">
-                    <div v-for="n in 3" :key="n" class="score-unit border rounded text-center mx-1 px-1 bg-white shadow-sm" 
-                         :class="{
-                            'border-winner-home': game.scores && game.scores[n-1] && Number(game.scores[n-1].h) > Number(game.scores[n-1].a),
-                            'border-winner-away': game.scores && game.scores[n-1] && Number(game.scores[n-1].a) > Number(game.scores[n-1].h)
-                         }">
-                        <div class="text-muted" style="font-size: 0.5rem;">{{ n }}G</div>
-                        <div class="fw-bold" style="font-size: 0.85rem;">
-                            {{ (game.scores && game.scores[n-1]) ? game.scores[n-1].h + '-' + game.scores[n-1].a : '0-0' }}
-                        </div>
-                    </div>
-                </div>
+                                <div class="d-flex justify-content-center flex-grow-1">
+                                    <div v-for="n in 3" :key="n" class="score-unit border rounded text-center mx-1 px-1 bg-white shadow-sm" 
+                                         :class="{
+                                            'border-winner-home': game.scores && game.scores[n-1] && Number(game.scores[n-1].h) > Number(game.scores[n-1].a),
+                                            'border-winner-away': game.scores && game.scores[n-1] && Number(game.scores[n-1].a) > Number(game.scores[n-1].h)
+                                         }">
+                                        <div class="text-muted" style="font-size: 0.5rem;">{{ n }}G</div>
+                                        <div class="fw-bold" style="font-size: 0.85rem;">
+                                            {{ (game.scores && game.scores[n-1]) ? game.scores[n-1].h + '-' + game.scores[n-1].a : '0-0' }}
+                                        </div>
+                                    </div>
+                                </div>
 
-                <div class="player-area text-start ps-1" style="width: 30%;">
-                    <div class="player-name">
-                        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)]">
-                            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)] }}
-                        </span>
-                        {{ formatName(game.awayP1) || '---' }}
-                    </div>
-                    <div v-if="game.awayP2" class="player-name">
-                        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)]">
-                            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)] }}
-                        </span>
-                        {{ formatName(game.awayP2) }}
-                    </div>
-                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
-                          class="badge rounded-pill bg-danger badge-score">
-                        {{ getIndividualGameCount(game, match.status).away }}G
-                    </span>
-                </div>
-            </div>
+                                <div class="player-area text-start ps-1" style="width: 30%;">
+                                    <div class="player-name">
+                                        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)]">
+                                            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP1)] }}
+                                        </span>
+                                        {{ formatName(game.awayP1) || '---' }}
+                                    </div>
+                                    <div v-if="game.awayP2" class="player-name">
+                                        <span class="back-number" v-if="backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)]">
+                                            {{ backNumberMap[formatName(match.awayUniv) + '_' + formatName(game.awayP2)] }}
+                                        </span>
+                                        {{ formatName(game.awayP2) }}
+                                    </div>
+                                    <span v-if="getIndividualGameCount(game, match.status).home > 0 || getIndividualGameCount(game, match.status).away > 0" 
+                                          class="badge rounded-pill bg-danger badge-score">
+                                        {{ getIndividualGameCount(game, match.status).away }}G
+                                    </span>
+                                </div>
+                            </div>
 
 
                             <div v-if="!isViewingMode && game.pointHistory && ( (game.pointHistory[0] && game.pointHistory[0].length > 0) || (game.pointHistory[1] && game.pointHistory[1].length > 0) || (game.pointHistory[2] && game.pointHistory[2].length > 0) )" class="pb-2">
 
-    <div class="mx-2 mb-1 p-2 bg-light border rounded text-center shadow-sm" 
-         @click="toggleHistory(match.id + game.type)" 
-         style="cursor: pointer; color: #0d6efd; line-height: 1;">
-        <i class="bi" 
-           :class="expandedHistories.includes(match.id + game.type) ? 'bi-chevron-up' : 'bi-chevron-down'"
-           style="font-size: 1.1rem;"></i>
-    </div>
+                                <div class="mx-2 mb-1 p-2 bg-light border rounded text-center shadow-sm" 
+                                     @click="toggleHistory(match.id + game.type)" 
+                                     style="cursor: pointer; color: #0d6efd; line-height: 1;">
+                                    <i class="bi" 
+                                       :class="expandedHistories.includes(match.id + game.type) ? 'bi-chevron-up' : 'bi-chevron-down'"
+                                       style="font-size: 1.1rem;"></i>
+                                </div>
 
-    <div v-show="expandedHistories.includes(match.id + game.type)" class="px-2">
-        <div v-for="n in 3" :key="n">
-            <div v-if="game.pointHistory[n-1] && game.pointHistory[n-1].length > 0" class="mb-3">
-                <div class="ps-1 small fw-bold text-muted mb-1 mt-2" style="font-size: 0.6rem; border-left: 3px solid #0d6efd;">
-                    {{ n }}G Point Flow
-                </div>
-                <div class="point-history-container shadow-sm rounded border">
-                    <table class="history-table">
-    <tr>
-        <td class="history-label text-truncate">
-            {{ formatName(game.homeP1) }}{{ game.homeP2 ? '・' + formatName(game.homeP2) : '' }}
-        </td>
-        <td class="text-center" style="width: 22px; border: 1px solid #eee;">0</td>
-        
-        <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'h')" :key="idx" 
-            :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
-            {{ p }}
-        </td>
-    </tr>
-    <tr>
-        <td class="history-label text-truncate">
-            {{ formatName(game.awayP1) }}{{ game.awayP2 ? '・' + formatName(game.awayP2) : '' }}
-        </td>
-        <td class="text-center" style="width: 22px; border: 1px solid #eee;">0</td>
-        
-        <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'a')" :key="idx"
-            :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
-            {{ p }}
-        </td>
-    </tr>
-</table>
+                                <div v-show="expandedHistories.includes(match.id + game.type)" class="px-2">
+                                    <div v-for="n in 3" :key="n">
+                                        <div v-if="game.pointHistory[n-1] && game.pointHistory[n-1].length > 0" class="mb-3">
+                                            <div class="ps-1 small fw-bold text-muted mb-1 mt-2" style="font-size: 0.6rem; border-left: 3px solid #0d6efd;">
+                                                {{ n }}G Point Flow
+                                            </div>
+                                            <div class="point-history-container shadow-sm rounded border">
+                                                <table class="history-table">
+                                                    <tr>
+                                                        <td class="history-label text-truncate">
+                                                            {{ formatName(game.homeP1) }}{{ game.homeP2 ? '・' + formatName(game.homeP2) : '' }}
+                                                        </td>
+                                                        <td class="text-center" style="width: 22px; border: 1px solid #eee;">0</td>
+                                                        
+                                                        <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'h')" :key="idx" 
+                                                            :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
+                                                            {{ p }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="history-label text-truncate">
+                                                            {{ formatName(game.awayP1) }}{{ game.awayP2 ? '・' + formatName(game.awayP2) : '' }}
+                                                        </td>
+                                                        <td class="text-center" style="width: 22px; border: 1px solid #eee;">0</td>
+                                                        
+                                                        <td v-for="(p, idx) in getPointFlow(game.pointHistory[n-1], 'a')" :key="idx"
+                                                            :class="{'last-point': idx === game.pointHistory[n-1].length - 1 && p !== ''}">
+                                                            {{ p }}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div></div></div> </div></div></div></div></div></div><script>
+</div>
+
+<script>
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwBBQHjzSAXXNTD0nq2b1LgUtH8xhvyq8KCSCxb7lv3Z5Ze86IRMp2itRlQoa3-mHSPOQ/exec";
 const firebaseConfig = {
     apiKey: "AIzaSyASxcZep_OpFzc2EML2sUMRuK8rDJXv-cg",
@@ -567,137 +678,156 @@ const db = firebase.firestore();
 const { createApp } = Vue;
 createApp({
     data() {
+        // 新しい部の選択肢を定義
+        const divisions = ['1部', '2部', '3部A', '3部B', '4部A', '4部B', '4部C', '4部D', '5部A', '5部B', '5部C', '5部D', '6部A', '6部B', '6部C', '6部D', '入替戦・順位決定戦'];
+        
+        // タブリストを自動生成
+        const tabs = [];
+        divisions.forEach(d => {
+            tabs.push({ id: d + 'm', name: d + ' 男子', gender: '1', division: d });
+            tabs.push({ id: d + 'w', name: d + ' 女子', gender: '2', division: d });
+        });
+
         return {
-            // --- 既存データ ---
             allMatches: [], allRecords: [], expandedMatches: [], expandedHistories: [],
-            currentTab: { gender: '1', division: 1 }, 
-            tabList: [
-                { id: '1m', name: '1部 男子', gender: '1', division: 1 },
-                { id: '1w', name: '1部 女子', gender: '2', division: 1 },
-                { id: '2m', name: '2部 男子', gender: '1', division: 2 },
-                { id: '2w', name: '2部 女子', gender: '2', division: 2 },
-            ],
-            // --- 追加データ ---
+            currentTab: { gender: '1', division: '1部' }, 
+            tabList: tabs,
+            
             isViewingMode: false,
-            viewIntervalSec: 10,     // 切り替え秒数
-            currentViewingIndex: 0,  // 現在何番目のLIVE試合か
-            viewingTimer: null,      // インターバルタイマー
-            viewingProgress: 0,      // プログレスバー用
+            viewIntervalSec: 10,     
+            currentViewingIndex: 0,  
+            viewingTimer: null,      
+            viewingProgress: 0,      
             progressTimer: null,
-venueYoutubeUrls: ["", ""]
+            venueYoutubeUrls: ["", ""],
+            selectedViewingTabs: tabs.map(t => t.id), // 初期状態は全て選択済み
+            showViewingSettings: false,
+            
+            // ▼追加：チーム詳細モーダル用の状態
+            teamModal: {
+                show: false,
+                univName: '',
+                president: '',
+                manager: '',
+                coach1: '',
+                coach2: '',
+                players: []
+            }
         }
     },
 
     computed: {
-    universityRankings() {
-        const stats = {};
-        this.leagueUnivs.forEach(univ => {
-            stats[univ] = { name: univ, matchW: 0, matchL: 0, gameW: 0, gameL: 0, setW: 0, setL: 0 };
-        });
+        filteredLiveTabs() {
+            // 現在進行中のタブから、チェックボックスで選択されたものだけを絞り込む
+            return this.activeLiveTabs.filter(tab => {
+                const tabId = tab.division + (tab.gender === '1' ? 'm' : 'w');
+                return this.selectedViewingTabs.includes(tabId);
+            });
+        },
 
-        this.filteredMatches.forEach(m => {
-            const s = this.getMatchScore(m);
-            const hName = (m.homeUniv || '').trim();
-            const aName = (m.awayUniv || '').trim();
-            if ((s.home + s.away > 0) && stats[hName] && stats[aName]) {
-                stats[hName].gameW += s.home; stats[hName].gameL += s.away;
-                stats[aName].gameW += s.away; stats[aName].gameL += s.home;
-                if (s.home > s.away) { stats[hName].matchW++; stats[aName].matchL++; }
-                else if (s.away > s.home) { stats[aName].matchW++; stats[hName].matchL++; }
-                m.games.forEach(g => {
-                    const c = this.getIndividualGameCount(g, m.status);
-                    stats[hName].setW += c.home; stats[hName].setL += c.away;
-                    stats[aName].setW += c.away; stats[aName].setL += c.home;
-                });
-            }
-        });
+        universityRankings() {
+            const stats = {};
+            this.leagueUnivs.forEach(univ => {
+                stats[univ] = { name: univ, matchW: 0, matchL: 0, gameW: 0, gameL: 0, setW: 0, setL: 0 };
+            });
 
-        return Object.values(stats).sort((a, b) => {
-            if (b.matchW !== a.matchW) return b.matchW - a.matchW;
-            if ((b.gameW - b.gameL) !== (a.gameW - a.gameL)) return (b.gameW - b.gameL) - (a.gameW - a.gameL);
-            return (b.setW - b.setL) - (a.setW - a.setL);
-        });
-    },
-    backNumberMap() {
-        const map = {};
-        this.allRecords.forEach(record => {
-            try {
-                const players = JSON.parse(record.player_reg);
-                const univ = record.univ_name.trim();
-                players.forEach(p => { 
-                    if (p.name && p.back_number) {
-                        const normalizedName = this.formatName(p.name);
-                        map[`${univ}_${normalizedName}`] = p.back_number; 
-                    }
-                });
-            } catch (e) {}
-        });
-        return map;
-    },
-    filteredMatches() {
-        const label = this.currentTab.gender === '1' ? '男子' : '女子';
-        return this.allMatches.filter(m => m.gender === label && Number(m.division) === this.currentTab.division);
-    },
-    leagueUnivs() {
-        const univMap = new Map();
-        this.filteredMatches.forEach(m => {
-            if (m.homeUniv && m.homeRank !== undefined) univMap.set(Number(m.homeRank), m.homeUniv.trim());
-            if (m.awayUniv && m.awayRank !== undefined) univMap.set(Number(m.awayRank), m.awayUniv.trim());
-        });
-        return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
-    },
-    groupedMatches() {
-        const groups = {};
-        this.filteredMatches.forEach(m => {
-            const date = m.matchDate || "未定";
-            if (!groups[date]) groups[date] = [];
-            groups[date].push(m);
-        });
-        return groups;
-    },
-    // ★ 順番を指定したソート版のみを残します
-    liveMatchesOnly() {
-        const live = this.allMatches.filter(m => m.isLive);
-        return live.sort((a, b) => {
-            if (Number(a.division) !== Number(b.division)) {
-                return Number(a.division) - Number(b.division);
-            }
-            if (a.gender !== b.gender) {
-                return a.gender === '男子' ? -1 : 1;
-            }
-            return (a.sortOrder || 0) - (b.sortOrder || 0);
-        });
-    },
+            this.filteredMatches.forEach(m => {
+                const s = this.getMatchScore(m);
+                const hName = (m.homeUniv || '').trim();
+                const aName = (m.awayUniv || '').trim();
+                if ((s.home + s.away > 0) && stats[hName] && stats[aName]) {
+                    stats[hName].gameW += s.home; stats[hName].gameL += s.away;
+                    stats[aName].gameW += s.away; stats[aName].gameL += s.home;
+                    if (s.home > s.away) { stats[hName].matchW++; stats[aName].matchL++; }
+                    else if (s.away > s.home) { stats[aName].matchW++; stats[hName].matchL++; }
+                    m.games.forEach(g => {
+                        const c = this.getIndividualGameCount(g, m.status);
+                        stats[hName].setW += c.home; stats[hName].setL += c.away;
+                        stats[aName].setW += c.away; stats[aName].setL += c.home;
+                    });
+                }
+            });
 
-activeLiveTabs() {
-        const tabs = [];
-        this.liveMatchesOnly.forEach(m => {
-            const genderValue = m.gender === '男子' ? '1' : '2';
-            const divisionValue = Number(m.division);
-            // すでにリストに登録済みかチェック
-            const exists = tabs.find(t => t.gender === genderValue && t.division === divisionValue);
-            if (!exists) {
-                tabs.push({ gender: genderValue, division: divisionValue });
-            }
-        });
-        return tabs;
+            return Object.values(stats).sort((a, b) => {
+                if (b.matchW !== a.matchW) return b.matchW - a.matchW;
+                if ((b.gameW - b.gameL) !== (a.gameW - a.gameL)) return (b.gameW - b.gameL) - (a.gameW - a.gameL);
+                return (b.setW - b.setL) - (a.setW - a.setL);
+            });
+        },
+        backNumberMap() {
+            const map = {};
+            this.allRecords.forEach(record => {
+                try {
+                    const players = typeof record.player_reg === 'string' ? JSON.parse(record.player_reg) : (record.player_reg || []);
+                    const univ = (record.univ_name || '').trim();
+                    players.forEach(p => { 
+                        if (p.name && p.back_number) {
+                            const normalizedName = this.formatName(p.name);
+                            map[`${univ}_${normalizedName}`] = p.back_number; 
+                        }
+                    });
+                } catch (e) {}
+            });
+            return map;
+        },
+        filteredMatches() {
+            const label = this.currentTab.gender === '1' ? '男子' : '女子';
+            return this.allMatches.filter(m => m.gender === label && m.division === this.currentTab.division);
+        },
+        leagueUnivs() {
+            const univMap = new Map();
+            this.filteredMatches.forEach(m => {
+                if (m.homeUniv && m.homeRank !== undefined) univMap.set(Number(m.homeRank), m.homeUniv.trim());
+                if (m.awayUniv && m.awayRank !== undefined) univMap.set(Number(m.awayRank), m.awayUniv.trim());
+            });
+            return Array.from(univMap.entries()).sort((a, b) => a[0] - b[0]).map(e => e[1]);
+        },
+        groupedMatches() {
+            const groups = {};
+            this.filteredMatches.forEach(m => {
+                const date = m.matchDate || "未定";
+                if (!groups[date]) groups[date] = [];
+                groups[date].push(m);
+            });
+            return groups;
+        },
+        liveMatchesOnly() {
+            const live = this.allMatches.filter(m => m.isLive);
+            return live.sort((a, b) => {
+                const aDivIdx = this.tabList.findIndex(t => t.division === a.division && t.gender === (a.gender === '男子' ? '1' : '2'));
+                const bDivIdx = this.tabList.findIndex(t => t.division === b.division && t.gender === (b.gender === '男子' ? '1' : '2'));
+                
+                if (aDivIdx !== bDivIdx) return aDivIdx - bDivIdx;
+                return (a.sortOrder || 0) - (b.sortOrder || 0);
+            });
+        },
+        activeLiveTabs() {
+            const tabs = [];
+            this.liveMatchesOnly.forEach(m => {
+                const genderValue = m.gender === '男子' ? '1' : '2';
+                const divisionValue = m.division; 
+                
+                const exists = tabs.find(t => t.gender === genderValue && t.division === divisionValue);
+                if (!exists) {
+                    tabs.push({ gender: genderValue, division: divisionValue });
+                }
+            });
+            return tabs;
+        },
+        currentTabName() {
+            const tab = this.tabList.find(t => t.gender === this.currentTab.gender && t.division === this.currentTab.division);
+            return tab ? tab.name : '';
+        }
     },
-
-    currentTabName() {
-        const tab = this.tabList.find(t => t.gender === this.currentTab.gender && t.division === this.currentTab.division);
-        return tab ? tab.name : '';
-    }
-},
 
     async mounted() {
-    try {
-            // GASの強力なキャッシュを回避するため、常に最新のタイムスタンプを付与して取得
+        try {
             const res = await fetch(GAS_API_URL + "?t=" + new Date().getTime());
             const data = await res.json();
             this.allRecords = data.records;
-            console.log("【確認用】GASから取得した全データ:", this.allRecords); // ★この1行を追加してデータの中身を見ます
+            console.log("【確認用】GASから取得した全データ:", this.allRecords);
         } catch (e) { 
-            console.error("【エラー】GASからのデータ取得に失敗:", e); // ★エラー時もわかりやすくします
+            console.error("【エラー】GASからのデータ取得に失敗:", e);
         }
 
         db.collection('settings').doc('venue').onSnapshot(doc => {
@@ -715,47 +845,85 @@ activeLiveTabs() {
         });
     },
     methods: {
-        switchTab(g, d) { this.currentTab.gender = g; this.currentTab.division = d; },
+        // ▼追加：チーム詳細モーダルを開くメソッド
+        openTeamInfo(univName) {
+            if (!univName || this.allRecords.length === 0) return;
+            const normalize = str => str ? String(str).replace(/[\s　]/g, '') : '';
+            const targetName = normalize(univName);
+            
+            // 現在のタブが男子(1)か女子(2)かを取得
+            const currentGender = this.currentTab.gender; 
 
-toggleViewingMode() {
-        if (this.isViewingMode) {
-            // チェック対象を activeLiveTabs に変更
-            if (this.activeLiveTabs.length === 0) {
-                alert("現在進行中のカテゴリーがありません。");
-                this.isViewingMode = false;
+            // ★大学名が一致 ＋ IDの先頭が現在の男女と一致するレコードを探す
+            const rec = this.allRecords.find(r => 
+                r.univ_name && 
+                normalize(r.univ_name) === targetName &&
+                String(r.univ_id).startsWith(currentGender) 
+            );
+            
+            if (!rec) {
+                alert("該当するチームの詳細データがまだ登録されていません。");
                 return;
             }
-            this.startViewingCycle();
-        } else {
-            this.stopViewingCycle();
-        }
-    },
+
+            this.teamModal.univName = rec.univ_name;
+            this.teamModal.president = rec.president || '---';
+            this.teamModal.manager = rec.manager || '---';
+            this.teamModal.coach1 = rec.coach1 || '---';
+            this.teamModal.coach2 = rec.coach2 || '---';
+
+            try {
+                const players = typeof rec.player_reg === 'string' ? JSON.parse(rec.player_reg) : (rec.player_reg || []);
+                // 空のデータ（名前が未入力の行）を除外
+                this.teamModal.players = Array.isArray(players) ? players.filter(p => p.name && p.name.trim() !== '') : [];
+            } catch(e) {
+                console.error("選手データのパースに失敗:", e);
+                this.teamModal.players = [];
+            }
+            
+            this.teamModal.show = true;
+        },
+
+        switchTab(g, d) { this.currentTab.gender = g; this.currentTab.division = d; },
+
+        toggleViewingMode() {
+            if (this.isViewingMode) {
+                if (this.filteredLiveTabs.length === 0) {
+                    alert("現在指定されたカテゴリで進行中の試合がありません。");
+                    this.isViewingMode = false;
+                    return;
+                }
+                this.startViewingCycle();
+            } else {
+                this.stopViewingCycle();
+            }
+        },
 
         startViewingCycle() {
-        this.currentViewingIndex = 0; // ここでは「カテゴリーの番号」として使用
-        this.showCategoryMatches();  // 最初のカテゴリーを表示
-        
-        this.viewingProgress = 0;
-        const stepMs = 100;
-        this.viewingTimer = setInterval(() => {
-            this.viewingProgress += (stepMs / (this.viewIntervalSec * 1000)) * 100;
-            if (this.viewingProgress >= 100) {
-                this.viewingProgress = 0;
-                this.nextCategory();
-            }
-        }, stepMs);
-    },
-
-nextCategory() {
-        this.currentViewingIndex++;
-        if (this.currentViewingIndex >= this.activeLiveTabs.length) {
             this.currentViewingIndex = 0;
-        }
-        this.showCategoryMatches();
-    },
+            this.showCategoryMatches();  
+            
+            this.viewingProgress = 0;
+            const stepMs = 100;
+            this.viewingTimer = setInterval(() => {
+                this.viewingProgress += (stepMs / (this.viewIntervalSec * 1000)) * 100;
+                if (this.viewingProgress >= 100) {
+                    this.viewingProgress = 0;
+                    this.nextCategory();
+                }
+            }, stepMs);
+        },
 
-    showCategoryMatches() {
-            const tab = this.activeLiveTabs[this.currentViewingIndex];
+        nextCategory() {
+            this.currentViewingIndex++;
+            if (this.currentViewingIndex >= this.filteredLiveTabs.length) {
+                this.currentViewingIndex = 0;
+            }
+            this.showCategoryMatches();
+        },
+
+        showCategoryMatches() {
+            const tab = this.filteredLiveTabs[this.currentViewingIndex];
             if (!tab) return;
 
             this.switchTab(tab.gender, tab.division);
@@ -767,15 +935,36 @@ nextCategory() {
                     }
                 });
 
-                // ▼▼▼ ここから修正：映像エリアのトップに合わせる ▼▼▼
                 const videoArea = document.getElementById('video-area');
                 if (videoArea && this.isViewingMode) {
                     videoArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
-                // ▲▲▲ 修正ここまで ▲▲▲
             });
+        },
+
+        updateViewingCycleIfNeeded() {
+            if (this.isViewingMode) {
+                if (this.filteredLiveTabs.length === 0) {
+                    this.stopViewingCycle();
+                    this.isViewingMode = false;
+                    alert("巡回対象がなくなったため、閲覧モードを終了しました。");
+                } else {
+                    if (this.currentViewingIndex >= this.filteredLiveTabs.length) {
+                        this.currentViewingIndex = 0;
+                    }
+                    this.showCategoryMatches();
+                }
+            }
+        },
+        selectAllTabs() {
+            this.selectedViewingTabs = this.tabList.map(t => t.id);
+            this.updateViewingCycleIfNeeded();
+        },
+        clearAllTabs() {
+            this.selectedViewingTabs = [];
+            this.updateViewingCycleIfNeeded();
         },
 
         stopViewingCycle() {
@@ -783,6 +972,7 @@ nextCategory() {
             this.viewingTimer = null;
             this.viewingProgress = 0;
         },
+        
         nextLiveMatch() {
             this.currentViewingIndex++;
             if (this.currentViewingIndex >= this.liveMatchesOnly.length) {
@@ -790,22 +980,20 @@ nextCategory() {
             }
             this.showCurrentLiveMatch();
         },
+        
         showCurrentLiveMatch() {
             const match = this.liveMatchesOnly[this.currentViewingIndex];
             if (!match) return;
 
-            // 1. タブを切り替える
             const gen = match.gender === '男子' ? '1' : '2';
-            const div = Number(match.division);
+            const div = match.division;
             this.switchTab(gen, div);
 
-            // 2. アコーディオンを開く
             setTimeout(() => {
                 if (!this.expandedMatches.includes(match.id)) {
                     this.expandedMatches.push(match.id);
                 }
                 
-                // 3. スクロール
                 this.$nextTick(() => {
                     const el = document.getElementById('match-' + match.id);
                     if (el) {
@@ -814,7 +1002,6 @@ nextCategory() {
                 });
             }, 100);
         },
-
 
         getMatchScore(m) {
             if (!m || !m.games) return { home: 0, away: 0 };
@@ -879,45 +1066,44 @@ nextCategory() {
             });
         },
 
-getUnivLogo(univName) {
-    if (!univName || this.allRecords.length === 0) return '';
-    
-    // スペースを削除して比較しやすくする
-    const normalize = str => str ? String(str).replace(/[\s　]/g, '') : '';
-    const targetName = normalize(univName);
-    
-    // 【修正箇所】名前が一致し、"かつ" logo_urlに文字が入っているレコードを優先して探す！
-    const record = this.allRecords.find(r => 
-        r.univ_name && 
-        normalize(r.univ_name) === targetName && 
-        r.logo_url && 
-        r.logo_url.trim() !== ''
-    );
-    
-    return record ? record.logo_url : '';
-},
+        getUnivLogo(univName) {
+            if (!univName || this.allRecords.length === 0) return '';
+            
+            const normalize = str => str ? String(str).replace(/[\s　]/g, '') : '';
+            const targetName = normalize(univName);
+            const currentGender = this.currentTab.gender; // 現在の男女
+            
+            const record = this.allRecords.find(r => 
+                r.univ_name && 
+                normalize(r.univ_name) === targetName && 
+                String(r.univ_id).startsWith(currentGender) && // ★追加：男女を区別
+                r.logo_url && 
+                r.logo_url.trim() !== ''
+            );
+            
+            return record ? record.logo_url : '';
+        },
 
-formatName(name) {
+        formatName(name) {
             if (!name) return '';
             return name
-                .replace(/　/g, ' ')   // 全角スペースを半角に変換
-                .replace(/\s+/g, ' ')  // 連続するスペースを1つに統合
-                .trim();               // 前後の余白を削除
-            },
+                .replace(/　/g, ' ')   
+                .replace(/\s+/g, ' ')  
+                .trim();               
+        },
 
-extractYouTubeId(url) {
+        extractYouTubeId(url) {
             if (!url) return null;
-            // 通常の動画、短縮URL、ライブ配信(/live/)など、あらゆる形式に対応する正規表現
             const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|live\/))([^#\&\?]{11})/;
             const match = url.match(regExp);
             
             if (match && match[1].length === 11) {
-                return match[1]; // URLから抽出成功
+                return match[1]; 
             } else if (url.trim().length === 11) {
-                return url.trim(); // 11桁のIDが直接入力された場合
+                return url.trim(); 
             }
             
-            return null; // 無効なURLの場合は null を返す（iframeを表示させない）
+            return null; 
         }
     }
 }).mount('#app');
